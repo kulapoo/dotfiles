@@ -1,0 +1,70 @@
+[source.crates-io]
+# Use sparse registry protocol for better performance
+protocol = "sparse"
+
+[target.x86_64-unknown-linux-gnu]
+# Use system linker
+linker = "gcc"
+# Enable parallel compilation
+rustflags = ["-C", "target-cpu=native"]
+
+[build]
+# Enable parallel compilation
+jobs = 8
+# Enable incremental compilation
+incremental = true
+
+[cargo-new]
+# Default settings for new projects
+name = "YOUR_NAME"
+email = "YOUR_EMAIL"
+vcs = "git"
+
+[registry]
+# Default registry
+default = "crates-io"
+# Cache downloaded dependencies
+token = ""
+
+[http]
+# Configure timeout (in seconds)
+timeout = 30
+# Configure number of retries
+retry = 2
+# Check certificate
+check-revoke = true
+
+[net]
+# Configure git fetch with CLI
+git-fetch-with-cli = true
+
+[term]
+# Configure progress bar
+progress.when = 'auto'
+progress.width = 80
+
+[profile.dev]
+# Development profile configurations
+opt-level = 0
+debug = true
+split-debuginfo = '...'  # Platform-specific
+debug-assertions = true
+overflow-checks = true
+lto = false
+panic = 'unwind'
+incremental = true
+codegen-units = 256
+rpath = false
+
+[profile.release]
+# Release profile configurations
+opt-level = 3
+debug = false
+split-debuginfo = '...'  # Platform-specific
+debug-assertions = false
+overflow-checks = false
+lto = true
+panic = 'unwind'
+incremental = false
+codegen-units = 16
+rpath = false

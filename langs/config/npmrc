@@ -1,0 +1,51 @@
+# Use a custom directory for global installations
+prefix=${HOME}/.npm-global
+
+# Save exact version instead of using ^
+save-exact=true
+
+# Configure package-lock for better determinism
+package-lock=true
+lockfile-version=2
+
+# Show progress bar during package installation
+progress=true
+
+# Default settings for package initialization
+init-author-name="YOUR_NAME"
+init-author-email="YOUR_EMAIL"
+init-license="MIT"
+init-version="0.1.0"
+
+# Security settings
+audit=true
+fund=false
+
+# Use strict SSL
+strict-ssl=true
+
+# Cache settings
+cache=${HOME}/.npm-cache
+cache-min=10
+
+# Set registry
+registry=https://registry.npmjs.org/
+
+# Configure timeout (in ms)
+fetch-timeout=300000
+
+# Configure script-shell to use bash
+script-shell=/bin/bash
+
+# Configure peer dependency behavior
+legacy-peer-deps=false
+
+# Development configuration
+save-dev=true
+save-prod=false
+
+# Package locking behavior
+package-lock=true
+
+# Disable automatic update checks
+update-notifier=false

@@ -1,0 +1,144 @@
+[core]
+    editor = vim
+    excludesfile = ~/.gitignore_global
+    whitespace = trailing-space,space-before-tab
+    autocrlf = input
+    safecrlf = true
+    pager = diff-so-fancy | less --tabs=4 -RFX
+
+[init]
+    defaultBranch = main
+
+[color]
+    ui = auto
+    diff = auto
+    status = auto
+    branch = auto
+    interactive = auto
+
+[color "diff"]
+    meta = yellow
+    frag = magenta bold
+    old = red bold
+    new = green bold
+    whitespace = red reverse
+
+[color "status"]
+    added = green
+    changed = yellow
+    untracked = red
+
+[diff]
+    tool = vimdiff
+    colorMoved = default
+
+[difftool]
+    prompt = false
+
+[merge]
+    tool = vimdiff
+    conflictstyle = diff3
+    ff = only
+
+[mergetool]
+    prompt = false
+    keepBackup = false
+
+[push]
+    default = current
+    followTags = true
+
+[pull]
+    rebase = false
+
+[fetch]
+    prune = true
+
+[branch]
+    autosetuprebase = always
+
+[rebase]
+    autosquash = true
+    autostash = true
+
+[status]
+    showUntrackedFiles = all
+
+[transfer]
+    fsckobjects = true
+
+[alias]
+    # List aliases
+    aliases = config --get-regexp alias
+
+    # Basic shortcuts
+    st = status
+    ci = commit
+    co = checkout
+    br = branch
+    cp = cherry-pick
+
+    # Commit shortcuts
+    cm = commit -m
+    ca = commit --amend
+    can = commit --amend --no-edit
+
+    # Branch management
+    bd = branch -d
+    bD = branch -D
+
+    # Log viewing
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+    ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
+
+    # Show changes
+    df = diff
+    dc = diff --cached
+
+    # Stash operations
+    sl = stash list
+    sa = stash apply
+    ss = stash save
+    sp = stash pop
+
+    # Remote operations
+    pr = pull --rebase
+    pu = push
+    puf = push --force-with-lease
+
+    # Utility
+    unstage = reset HEAD --
+    undo = reset --soft HEAD^
+    cleanup = !git branch --merged | grep -v \"\\*\" | xargs -n 1 git branch -d
+    fresh = !git fetch --all && git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
+    wip = !git add -A && git commit -m "WIP"
+    unwip = reset HEAD~
+    sync = !git fetch origin && git remote prune origin && git pull --rebase
+
+[credential]
+    helper = cache --timeout=3600
+
+[help]
+    autocorrect = 1
+
+[url "git@github.com:"]
+    insteadOf = gh:
+
+[url "git@gitlab.com:"]
+    insteadOf = gl:
+
+[commit]
+    template = ~/.gitmessage
+    gpgsign = false
+
+[gpg]
+    program = gpg
+
+[tag]
+    forceSignAnnotated = false
+
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true

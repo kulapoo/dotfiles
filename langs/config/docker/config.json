@@ -1,0 +1,37 @@
+{
+  "builder": {
+      "gc": {
+          "defaultKeepStorage": "20GB",
+          "enabled": true
+      }
+  },
+  "experimental": false,
+  "features": {
+      "buildkit": true
+  },
+  "psFormat": "table {{.ID}}\\t{{.Image}}\\t{{.Status}}\\t{{.Names}}",
+  "stackOrchestrator": "swarm",
+  "debug": false,
+  "log-level": "info",
+  "default-network-mode": "bridge",
+  "default-shm-size": "64M",
+  "dns": [],
+  "max-concurrent-downloads": 3,
+  "max-concurrent-uploads": 5,
+  "default-runtime": "runc",
+  "runtimes": {
+      "runc": {
+          "path": "runc"
+      }
+  },
+  "default-address-pools": [
+      {
+          "base": "172.17.0.0/16",
+          "size": 24
+      }
+  ],
+  "registry-mirrors": [],
+  "insecure-registries": [],
+  "no-proxy": "localhost,127.0.0.1",
+  "hosts": ["unix:///var/run/docker.sock"]
+}
