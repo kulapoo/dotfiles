@@ -103,6 +103,7 @@ install_python() {
         # Add pyenv to PATH
         export PATH="$HOME/.pyenv/bin:$PATH"
         eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
 
         log_success "pyenv installed successfully"
     else
@@ -112,7 +113,8 @@ install_python() {
     # Install poetry for dependency management
     if ! command_exists poetry; then
         log_info "Installing Poetry..."
-        curl -sSL https://install.python-poetry.org | python3 -
+        log_success "Poetry installed successfully"
+        export PATH="$HOME/.local/bin:$PATH"
         log_success "Poetry installed successfully"
     else
         log_info "Poetry is already installed"
@@ -257,9 +259,6 @@ main() {
     install_python
     install_nodejs
     install_php
-
-    # Create/link configuration files
-    create_config_files
 
     log_success "Programming languages installation completed!"
     log_warning "Please log out and log back in for group changes to take effect"

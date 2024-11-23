@@ -1,9 +1,3 @@
-#!/usr/bin/env bash
-
-# utils/logging.sh
-# Helper script for consistent logging across all installation scripts
-
-# Reset
 export COLOR_NC='\e[0m'
 
 # Regular Colors
@@ -48,13 +42,3 @@ log_debug() {
 log_section() {
     echo -e "\n${COLOR_BOLD_CYAN}=== $1 ===${COLOR_NC}\n"
 }
-
-# Example usage:
-# source utils/logging.sh
-#
-# log_info "Installing package..."
-# log_success "Package installed successfully!"
-# log_error "Failed to install package"
-# log_warning "Package is outdated"
-# log_debug "Checking package version..."
-# log_section "Package Installation"

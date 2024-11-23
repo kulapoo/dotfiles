@@ -30,21 +30,21 @@ configure_git() {
 
     # Prompt for user information if not already configured
     if [ -z "$(git config --global user.name)" ]; then
-        log_info "Git user name not set. Prompting for input..."
-        read -p "Enter your Git name: " git_name
-        git config --global user.name "$git_name"
-        log_success "Git user name configured"
+      log_info "Git user name not set. Prompting for input..."
+      read -p "Enter your Git name: " git_name
+      git config --global user.name "$git_name"
+      log_success "Git user name configured"
     else
-        log_info "Git user name is already configured"
+      log_info "Git user name is already configured"
     fi
 
     if [ -z "$(git config --global user.email)" ]; then
-        log_info "Git email not set. Prompting for input..."
-        read -p "Enter your Git email: " git_email
-        git config --global user.email "$git_email"
-        log_success "Git email configured"
+      log_info "Git email not set. Prompting for input..."
+      read -p "Enter your Git email: " git_email
+      git config --global user.email "$git_email"
+      log_success "Git email configured"
     else
-        log_info "Git email is already configured"
+      log_info "Git email is already configured"
     fi
 }
 

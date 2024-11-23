@@ -8,6 +8,11 @@ DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 # Source the logging helper
 source "${DOTFILES_DIR}/utils/logging.sh"
 
+export BASH_IT="$HOME/.bash_it"
+
+echo $BASH_IT
+echo $DOTFILES_DIR
+
 # Install bash-it if not already installed
 install_bashit() {
     log_section "Installing Bash-it"
@@ -17,17 +22,26 @@ install_bashit() {
         git clone --depth=1 https://github.com/Bash-it/bash-it.git "$HOME/.bash_it"
         "$HOME/.bash_it/install.sh" --silent --no-modify-config
         log_success "Bash-it installed successfully"
+
     else
         log_info "Bash-it is already installed"
     fi
+}
+
+setup_custom_config() {
+  log_section "Setting Up Custom Bash Configuration"
+
+  ln -sf "$DOTFILES_DIR/bash/completion.bash" "$BASH_IT/custom/completion.bash"
+  ln -sf "$DOTFILES_DIR/bash/environment.bash" "$BASH_IT/custom/environment.bash"
+  ln -sf "$DOTFILES_DIR/bash/functions.bash" "$BASH_IT/custom/functions.bash"
+  ln -sf "$DOTFILES_DIR/bash/theme.bash" "$BASH_IT/custom/theme.bash"
+  log_success "Custom bash configuration files symlinked successfully"
 }
 
 # Enable bash-it components
 setup_bashit_components() {
     log_section "Setting Up Bash-it Components"
 
-    # Load bash-it
-    source "$HOME/.bash_it/bash_it.sh"
 
     log_info "Enabling completion features..."
     local completions=(
@@ -42,7 +56,7 @@ setup_bashit_components() {
     )
 
     for completion in "${completions[@]}"; do
-        bash-it enable completion "$completion"
+        bash -c "$BASH_IT/bash_it.sh" enable completion "$completion"
     done
 
     log_info "Enabling plugins..."
@@ -56,7 +70,7 @@ setup_bashit_components() {
     )
 
     for plugin in "${plugins[@]}"; do
-        bash-it enable plugin "$plugin"
+        bash -c $BASH_IT/bash_it.sh enable plugin "$plugin"
     done
 
     log_info "Enabling aliases..."
@@ -67,7 +81,7 @@ setup_bashit_components() {
     )
 
     for alias in "${aliases[@]}"; do
-        bash-it enable alias "$alias"
+        bash -c $BASH_IT/bash_it.sh enable alias "$alias"
     done
 
     log_success "Bash-it components enabled successfully"
@@ -80,8 +94,8 @@ main() {
     log_section "Starting Bash-it Installation and Setup"
 
     install_bashit
-    setup_bashit_components
     setup_custom_config
+    setup_bashit_components
 
     log_success "Bash-it setup completed successfully!"
     log_info "Please restart your terminal or source ~/.bashrc to apply changes"

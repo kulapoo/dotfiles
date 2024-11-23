@@ -1,6 +1,6 @@
 [core]
     editor = vim
-    excludesfile = ~/.gitignore_global
+	excludesfile = /root/.gitignore_global
     whitespace = trailing-space,space-before-tab
     autocrlf = input
     safecrlf = true
@@ -142,3 +142,6 @@
     smudge = git-lfs smudge -- %f
     process = git-lfs filter-process
     required = true
+[user]
+	name = kulapoo
+	email = kulaskulapoo@gmail.com
