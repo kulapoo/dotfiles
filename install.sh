@@ -73,9 +73,9 @@ link_dotfiles() {
 install_essentials() {
     log_section "Installing Essential Packages"
 
-    if [ -f "$DOTFILES_DIR/scripts/essentials.sh" ]; then
+    if [ -f "$DOTFILES_DIR/essentials/install.sh" ]; then
         log_info "Running essentials installation script"
-        bash "$DOTFILES_DIR/scripts/essentials.sh"
+        bash "$DOTFILES_DIR/essentials/install.sh"
         log_success "Essentials installation completed"
     else
         log_error "Essentials installation script not found"
