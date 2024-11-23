@@ -1,0 +1,30 @@
+{
+  "config": {
+      "optimize-autoloader": true,
+      "preferred-install": "dist",
+      "sort-packages": true,
+      "process-timeout": 1800,
+      "github-protocols": ["https"],
+      "use-github-api": true,
+      "notify-on-install": false,
+      "allow-plugins": {
+          "composer/package-versions-deprecated": true,
+          "symfony/flex": true,
+          "symfony/runtime": true
+      }
+  },
+  "repositories": {
+      "packagist": {
+          "type": "composer",
+          "url": "https://packagist.org"
+      }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "autoloader-suffix": null,
+  "github-oauth": {},
+  "cache-files-ttl": 15552000,
+  "cache-files-maxsize": "5G",
+  "discard-changes": true,
+  "htaccess-protect": false
+}
