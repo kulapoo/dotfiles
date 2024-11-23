@@ -1,17 +1,10 @@
 #!/usr/bin/env bash
 
-# Get the directory where the script is located
-DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Source the logging helper
-source "${DOTFILES_DIR}/utils/logging.sh"
-
-log_section "Loading Environment Configuration"
 
 # ====================
 # Basic Configuration
 # ====================
-log_info "Setting up basic environment configuration..."
 
 # Default editor
 export EDITOR='vim'
@@ -31,13 +24,11 @@ export HISTTIMEFORMAT="%Y-%m-%d %H:%M:%S "
 # ====================
 # Path Configuration
 # ====================
-log_info "Configuring PATH variables..."
 
 # Function to add to PATH if directory exists
 add_to_path() {
     if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
         PATH="$1:$PATH"
-        log_debug "Added to PATH: $1"
     fi
 }
 
@@ -50,14 +41,12 @@ add_to_path "/usr/local/sbin"
 # ====================
 # Development Tools
 # ====================
-log_info "Setting up development tool environments..."
 
 # Node.js Configuration
 export NVM_DIR="$HOME/.nvm"
 if [ -s "$NVM_DIR/nvm.sh" ]; then
     source "$NVM_DIR/nvm.sh"
     source "$NVM_DIR/bash_completion"
-    log_debug "NVM configuration loaded"
 fi
 
 # Python Configuration
@@ -69,7 +58,6 @@ add_to_path "$HOME/.poetry/bin"
 # Rust Configuration
 if [ -f "$HOME/.cargo/env" ]; then
     source "$HOME/.cargo/env"
-    log_debug "Rust environment loaded"
 fi
 
 # Go Configuration
@@ -79,7 +67,6 @@ add_to_path "$GOPATH/bin"
 # ====================
 # Tool Configuration
 # ====================
-log_info "Configuring development tools..."
 
 # FZF Configuration
 if [ -f ~/.fzf.bash ]; then
@@ -87,19 +74,16 @@ if [ -f ~/.fzf.bash ]; then
     export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
     export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
     export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-    log_debug "FZF configuration loaded"
 fi
 
 # Linuxbrew Configuration
 if [ -d "/home/linuxbrew/.linuxbrew" ]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-    log_debug "Linuxbrew environment loaded"
 fi
 
 # ====================
 # Application Settings
 # ====================
-log_info "Setting up application configurations..."
 
 # Docker Configuration
 export COMPOSE_DOCKER_CLI_BUILD=1
@@ -114,7 +98,6 @@ export BROWSER='google-chrome'
 # ====================
 # Aliases
 # ====================
-log_info "Setting up aliases..."
 
 # Navigation
 alias ..='cd ..'
@@ -161,7 +144,6 @@ alias ln='ln -i'
 # ====================
 # Custom Functions
 # ====================
-log_info "Loading custom functions..."
 
 # Quick directory switching with automatic ls
 cd() {
@@ -173,4 +155,3 @@ mkcd() {
     mkdir -p "$@" && cd "$_"
 }
 
-log_success "Environment configuration loaded successfully"

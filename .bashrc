@@ -6,18 +6,11 @@ case $- in
       *) return;;
 esac
 
-# Get the directory where the script is located
-DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Source the logging helper
-source "${DOTFILES_DIR}/utils/logging.sh"
-
-log_section "Loading Bash Configuration"
 
 # =====================
 # Basic Configuration
 # =====================
-log_info "Setting up basic shell configuration..."
 
 # Shell Options
 shopt -s checkwinsize  # Update window size after each command
@@ -36,27 +29,21 @@ stty -ixon
 # =====================
 # Bash-it Configuration
 # =====================
-log_info "Setting up Bash-it configuration..."
 
 # Path to the bash it configuration
 export BASH_IT="$HOME/.bash_it"
 
 
-# Load Bash It if it exists
-if [ -d "$BASH_IT" ]; then
-    log_debug "Loading Bash-it..."
-    source "$BASH_IT/bash_it.sh"
-    source "$DOTFILES_DIR/bash/theme.sh"
-    source "$DOTFILES_DIR/bash/environment.sh"
-    source "$DOTFILES_DIR/bash/functions.sh"
-    # Set up a basic prompt if bash-it is not available
-    PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+source "$BASH_IT/bash_it.sh"
+
+# Source the .bash_profile if it exists
+if [ -f "$HOME/.bash_profile" ]; then
+  source "$HOME/.bash_profile"
 fi
 
 # =====================
 # Completion Configuration
 # =====================
-log_info "Setting up completion configuration..."
 
 # Enable programmable completion features
 if ! shopt -oq posix; then
@@ -67,31 +54,19 @@ if ! shopt -oq posix; then
     fi
 fi
 
-# Load custom completions that are not part of bash-it
-if [ -d "$DOTFILES_DIR/bash/completions.d" ]; then
-    for completion in "$DOTFILES_DIR"/bash/completions.d/*; do
-        if [ -f "$completion" ]; then
-            log_debug "Loading completion: $completion"
-            source "$completion"
-        fi
-    done
-fi
 
 # =====================
 # Local Configuration
 # =====================
-log_info "Loading local configuration..."
 
 # Load local customizations if they exist
 if [ -f "$HOME/.bashrc.local" ]; then
-    log_debug "Loading local bashrc customizations"
     source "$HOME/.bashrc.local"
 fi
 
 # =====================
 # Terminal Configuration
 # =====================
-log_info "Setting up terminal configuration..."
 
 # Set a fancy prompt if not using bash-it
 if [ ! -d "$BASH_IT" ]; then
@@ -105,13 +80,7 @@ if [ ! -d "$BASH_IT" ]; then
     esac
 fi
 
-# Detect WSL for specific configurations
-if grep -q Microsoft /proc/version 2>/dev/null; then
-    log_debug "WSL environment detected"
-    # Add WSL-specific configurations here
-fi
 
-log_success "Bashrc configuration loaded successfully"
 
 # Print welcome message if this is a login shell
 if shopt -q login_shell; then
@@ -122,3 +91,8 @@ if shopt -q login_shell; then
         date "+%A %d %B %Y, %T"
     fi
 fi
+. "$HOME/.cargo/env"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

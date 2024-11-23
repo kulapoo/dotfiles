@@ -4,6 +4,7 @@ set -euo pipefail
 
 # Get the directory where the script is located
 DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SUDO_USER_HOME=$(getent passwd $SUDO_USER | cut -d: -f6)
 
 # Source the logging helper
 source "${DOTFILES_DIR}/utils/logging.sh"
@@ -14,16 +15,17 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
+
 # Create essential directories
 create_directories() {
     log_section "Creating Essential Directories"
 
     local directories=(
-        "$HOME/.config"
-        "$HOME/.local/bin"
-        "$HOME/.cache"
-        "$HOME/Development"
-        "$HOME/.ssh"
+        "$SUDO_USER_HOME/.config"
+        "$SUDO_USER_HOME/.local/bin"
+        "$SUDO_USER_HOME/.cache"
+        "$SUDO_USER_HOME/Development"
+        "$SUDO_USER_HOME/.ssh"
     )
 
     for dir in "${directories[@]}"; do
@@ -37,6 +39,8 @@ create_directories() {
     done
 }
 
+
+
 # Link dotfiles
 link_dotfiles() {
     log_section "Linking Dotfiles"
@@ -48,11 +52,15 @@ link_dotfiles() {
 
     local timestamp=$(date +%Y%m%d_%H%M%S)
 
+
+
+
     for file in "${dotfiles[@]}"; do
-        if [ -f "$HOME/$file" ]; then
-            if [ ! -L "$HOME/$file" ]; then  # If it's not already a symlink
+
+        if [ -f "$SUDO_USER_HOME/$file" ]; then
+            if [ ! -L "$SUDO_USER_HOME/$file" ]; then  # If it's not already a symlink
                 log_info "Backing up existing $file"
-                mv "$HOME/$file" "$HOME/${file}.backup_${timestamp}"
+                mv "$SUDO_USER_HOME/$file" "$SUDO_USER_HOME/${file}.backup_${timestamp}"
             else
                 log_debug "$file is already a symlink"
                 continue
@@ -61,7 +69,7 @@ link_dotfiles() {
 
         if [ -f "$DOTFILES_DIR/$file" ]; then
             log_info "Linking $file"
-            ln -sf "$DOTFILES_DIR/$file" "$HOME/$file"
+            ln -sf "$DOTFILES_DIR/$file" "$SUDO_USER_HOME/$file"
             log_success "Linked $file"
         else
             log_warning "Source file $file not found in dotfiles"
@@ -150,13 +158,13 @@ main() {
   # Create directories
   create_directories
 
-  # Install essential packages first
+  # # Install essential packages first
   install_essentials
 
-  # Install Git
+  # # Install Git
   install_git
 
-  # Link dotfiles
+  # # Link dotfiles
   link_dotfiles
 
   # Install and configure components
@@ -167,9 +175,8 @@ main() {
 
   # Set proper permissions
   set_permissions
-
+  exit
   log_success "Dotfiles installation completed successfully!"
-  log_info "Please restart your terminal or run 'source ~/.bashrc' to apply changes"
 }
 
 # Set proper permissions
@@ -177,10 +184,10 @@ set_permissions() {
     log_section "Setting File Permissions"
 
     # Ensure .ssh directory has correct permissions
-    if [ -d "$HOME/.ssh" ]; then
-        chmod 700 "$HOME/.ssh"
-        if [ -f "$HOME/.ssh/config" ]; then
-            chmod 600 "$HOME/.ssh/config"
+    if [ -d "$SUDO_USER_HOME/.ssh" ]; then
+        chmod 700 "$SUDO_USER_HOME/.ssh"
+        if [ -f "$SUDO_USER_HOME/.ssh/config" ]; then
+            chmod 600 "$SUDO_USER_HOME/.ssh/config"
         fi
         log_success "SSH directory permissions set"
     fi
@@ -190,31 +197,6 @@ set_permissions() {
     log_success "Script permissions set"
 }
 
-# Main installation flow
-main() {
-    log_section "Starting Dotfiles Installation"
-
-    # Create directories
-    create_directories
-
-    # Install essential packages first
-    install_essentials
-
-    # Link dotfiles
-    link_dotfiles
-
-    # Install and configure components
-    install_components
-
-    # Setup bash environment
-    setup_bash
-
-    # Set proper permissions
-    set_permissions
-
-    log_success "Dotfiles installation completed successfully!"
-    log_info "Please restart your terminal or run 'source ~/.bashrc' to apply changes"
-}
 
 # Run main installation
 main
