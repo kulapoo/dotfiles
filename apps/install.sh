@@ -62,14 +62,12 @@ install_obsidian() {
 
 # Stacer
 install_stacer() {
-  if ! command -v stacer &> /dev/null; then
-    log_info "Installing Stacer..."
-    sudo add-apt-repository -y ppa:oguzhaninan/stacer
-    sudo apt-get update
-    sudo apt-get install -y stacer
-  else
-    log_info "Stacer is already installed"
-  fi
+    if ! command -v stacer &> /dev/null; then
+        log_info "Installing Stacer..."
+        sudo apt-get install -y stacer || true
+    else
+        log_info "Stacer is already installed"
+    fi
 }
 
 # Discord

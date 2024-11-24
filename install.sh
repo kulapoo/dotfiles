@@ -16,6 +16,13 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
+test -d /home/linuxbrew/.linuxbrew && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+# Check if Homebrew is installed
+if ! command -v brew &> /dev/null; then
+  log_error "Homebrew is not installed. Please install Homebrew and run this script again."
+  exit 1
+fi
 
 # Create essential directories
 create_directories() {

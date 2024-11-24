@@ -60,6 +60,10 @@ if [ -f "$HOME/.cargo/env" ]; then
     source "$HOME/.cargo/env"
 fi
 
+# PHP configuration
+export PATH="/home/linuxbrew/.linuxbrew/opt/php/bin:$PATH"
+export PATH="/home/linuxbrew/.linuxbrew/opt/php/sbin:$PATH"
+
 # Go Configuration
 export GOPATH="$HOME/go"
 add_to_path "$GOPATH/bin"
@@ -155,3 +159,12 @@ mkcd() {
     mkdir -p "$@" && cd "$_"
 }
 
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
