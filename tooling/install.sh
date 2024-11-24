@@ -33,15 +33,13 @@ install_apt_tools() {
 
     # List of tools to install via apt
     local apt_tools=(
-        "htop"            # Interactive process viewer
-        "ripgrep"         # Fast grep alternative
-        "fd-find"         # User-friendly find alternative
-        "tree"            # Directory listing tool
-        "ncdu"           # Disk usage analyzer
-        "jq"             # JSON processor
-        "tmux"           # Terminal multiplexer
-        "neofetch"       # System info script
-        "httpie"         # User-friendly curl alternative
+        "htop"
+        "ripgrep"
+        "fd-find"
+        "tree"
+        "ncdu"
+        "jq"
+        "neofetch"
     )
 
     for tool in "${apt_tools[@]}"; do
@@ -49,122 +47,49 @@ install_apt_tools() {
     done
 }
 
-# Install and configure fzf
-install_fzf() {
-    log_section "Installing fzf"
 
-    if ! command_exists fzf; then
-        log_info "Cloning fzf repository..."
-        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+install_docker() {
+    log_section "Installing Docker"
+    if ! command_exists docker; then
+        log_info "Installing Docker from official repository..."
+        # Install prerequisites and set up Docker repository
+        sudo apt-get update
+        sudo apt-get install -y ca-certificates curl gnupg lsb-release
 
-        log_info "Running fzf installer..."
-        ~/.fzf/install --all --no-bash --no-fish
+        # Add Docker's official GPG key
+        sudo install -m 0755 -d /etc/apt/keyrings
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+        sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
-        # Create symbolic link
-        if [ ! -L "$HOME/.local/bin/fzf" ]; then
-            ln -s "$HOME/.fzf/bin/fzf" "$HOME/.local/bin/fzf"
-        fi
+        # Set up the repository
+        echo \
+          "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+          $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+          sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-        log_success "fzf installed successfully"
+        # Install Docker Engine
+        sudo apt-get update
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+        # Add user to docker group
+        sudo groupadd docker 2>/dev/null || true
+        sudo usermod -aG docker $USER
+
+        log_success "Docker installed successfully"
+        log_info "Please log out and back in for the docker group changes to take effect"
     else
-        log_info "fzf is already installed"
-
-        # Update fzf if it exists
-        if [ -d "$HOME/.fzf" ]; then
-            log_info "Updating fzf..."
-            cd "$HOME/.fzf" && git pull && ./install --all --no-bash --no-fish
-            log_success "fzf updated successfully"
-        fi
+        log_info "Docker is already installed"
     fi
-}
 
-# Install and configure bat
-install_bat() {
-    log_section "Installing bat"
-
-    if ! command_exists bat; then
-        log_info "Installing bat..."
-        sudo apt-get install -y bat
-
-        # On some distributions, bat is installed as batcat
-        if command_exists batcat && ! command_exists bat; then
-            mkdir -p "$HOME/.local/bin"
-            ln -s "$(which batcat)" "$HOME/.local/bin/bat"
-        fi
-
-        # Create bat config directory
-        mkdir -p "$HOME/.config/bat"
-
-        # Configure bat
-        if [ -f "$DOTFILES_DIR/dev_tools/config/bat.conf" ]; then
-            log_info "Configuring bat..."
-            ln -sf "$DOTFILES_DIR/dev_tools/config/bat.conf" "$HOME/.config/bat/config"
-        fi
-
-        log_success "bat installed successfully"
+    # Docker Compose is now included in docker-compose-plugin
+    if ! command_exists docker-compose; then
+        log_info "Docker Compose is included in docker-compose-plugin"
     else
-        log_info "bat is already installed"
+        log_info "Docker Compose is already installed"
     fi
 }
 
-# Install and configure delta (git pager)
-install_delta() {
-    log_section "Installing delta"
 
-    if ! command_exists delta; then
-        log_info "Installing delta..."
-
-        # Check architecture
-        local arch=$(uname -m)
-        local delta_version="0.16.5"  # Update this version as needed
-        local delta_url
-
-        case $arch in
-            x86_64)
-                delta_url="https://github.com/dandavison/delta/releases/download/${delta_version}/git-delta_${delta_version}_amd64.deb"
-                ;;
-            aarch64)
-                delta_url="https://github.com/dandavison/delta/releases/download/${delta_version}/git-delta_${delta_version}_arm64.deb"
-                ;;
-            *)
-                log_error "Unsupported architecture: $arch"
-                return 1
-                ;;
-        esac
-
-        # Download and install delta
-        local temp_deb=$(mktemp)
-        wget -O "$temp_deb" "$delta_url"
-        sudo dpkg -i "$temp_deb"
-        rm -f "$temp_deb"
-
-        log_success "delta installed successfully"
-    else
-        log_info "delta is already installed"
-    fi
-}
-
-# Configure tools
-configure_tools() {
-    log_section "Configuring Development Tools"
-
-    # Create config directories
-    mkdir -p "$HOME/.config/htop"
-
-    # Link configurations if they exist
-    if [ -f "$DOTFILES_DIR/dev_tools/config/htoprc" ]; then
-        log_info "Configuring htop..."
-        ln -sf "$DOTFILES_DIR/dev_tools/config/htoprc" "$HOME/.config/htop/htoprc"
-    fi
-
-    # Configure fzf
-    if [ -f "$DOTFILES_DIR/dev_tools/config/fzf.conf" ]; then
-        log_info "Configuring fzf..."
-        ln -sf "$DOTFILES_DIR/dev_tools/config/fzf.conf" "$HOME/.fzf.conf"
-    fi
-
-    log_success "Tool configurations completed"
-}
 
 # Cleanup function
 cleanup() {
@@ -182,10 +107,7 @@ main() {
     log_section "Starting Development Tools Installation"
 
     install_apt_tools
-    install_fzf
-    install_bat
-    install_delta
-    configure_tools
+    install_docker
     cleanup
 
     log_success "Development tools installation completed!"

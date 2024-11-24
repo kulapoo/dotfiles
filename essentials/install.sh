@@ -74,7 +74,7 @@ install_system_utils() {
         "apt-transport-https"
         "ca-certificates"
         "gnupg"
-        "lsb-release",
+        "lsb-release"
         "fonts-powerline"
     )
 
