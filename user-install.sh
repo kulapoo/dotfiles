@@ -7,9 +7,9 @@ DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "${DOTFILES_DIR}/utils/logging.sh"
 
 install_homebrew() {
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.profile
-    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  test -d ~/.linuxbrew && eval "$(~/.linuxbrew/bin/brew shellenv)"
+  test -d /home/linuxbrew/.linuxbrew && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  echo "eval \"\$($(brew --prefix)/bin/brew shellenv)\"" >> "$DOTFILES_DIR/bash/environment.bash"
 }
 
 
@@ -41,12 +41,14 @@ install_git() {
 install_fzf() {
   log_section "Installing fzf"
 
-  if [ -f "$DOTFILES_DIR/fzf/install.sh" ]; then
-    log_info "Running fzf installation script"
-    bash -c "$DOTFILES_DIR/fzf/install.sh"
+  if command -v brew &>/dev/null; then
+    log_info "Installing fzf using Homebrew"
+    brew install fzf
+
+    $(brew --prefix)/opt/fzf/install --all --no-bash --no-fish --no-zsh
     log_success "fzf installation completed"
   else
-    log_error "fzf installation script not found"
+    log_error "Homebrew is not installed"
     exit 1
   fi
 }
@@ -67,12 +69,13 @@ setup_bash() {
 }
 
 main() {
+  setup_bash
+
   install_homebrew
 
   install_langs
 
-  setup_bash
-
+  install_fzf
 }
 
 

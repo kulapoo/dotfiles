@@ -10,20 +10,22 @@ source "${DOTFILES_DIR}/utils/logging.sh"
 
 export BASH_IT="$HOME/.bash_it"
 
-echo $BASH_IT
-echo $DOTFILES_DIR
 
 # Install bash-it if not already installed
 install_bashit() {
     log_section "Installing Bash-it"
 
     if [ ! -d "$HOME/.bash_it" ]; then
+
         log_info "Cloning bash-it repository..."
-        git clone --depth=1 https://github.com/Bash-it/bash-it.git "$HOME/.bash_it"
+        git clone --depth=1 https://github.com/Bash-it/bash-it.git "$BASH_IT"
         "$HOME/.bash_it/install.sh" --silent --no-modify-config
         log_success "Bash-it installed successfully"
-
+        echo "source $BASH_IT/bash_it.sh" >> "$HOME/.bashrc"
     else
+        if ! grep -q "source $BASH_IT/bash_it.sh" "$HOME/.bashrc"; then
+            echo "source $BASH_IT/bash_it.sh" >> "$HOME/.bashrc"
+        fi
         log_info "Bash-it is already installed"
     fi
 }

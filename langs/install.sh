@@ -88,16 +88,6 @@ install_python() {
     log_info "pyenv is already installed"
   fi
 
-  # Install poetry for dependency management
-  if ! command_exists poetry; then
-    log_info "Installing Poetry..."
-    curl -sSL https://install.python-poetry.org | python3 -
-    export PATH="$HOME/.local/bin:$PATH"
-    log_success "Poetry installed successfully"
-  else
-    log_info "Poetry is already installed"
-  fi
-
   # Install common Python packages
   log_info "Installing common Python packages..."
   local python_packages=(

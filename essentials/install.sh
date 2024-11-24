@@ -142,7 +142,7 @@ main() {
     log_info "Updating package list..."
     sudo apt-get update
     install_snap
-    install_flatpak
+    install_flatpak    
     # Install packages
     install_general
     install_vcs
