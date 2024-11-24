@@ -91,6 +91,7 @@ if shopt -q login_shell; then
         date "+%A %d %B %Y, %T"
     fi
 fi
+
 . "$HOME/.cargo/env"
 
 export NVM_DIR="$HOME/.nvm"

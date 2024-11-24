@@ -5,6 +5,7 @@ set -euo pipefail
 # Get the directory where the script is located
 DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SUDO_USER_HOME=$(getent passwd $SUDO_USER | cut -d: -f6)
+REAL_USER=$SUDO_USER
 
 # Source the logging helper
 source "${DOTFILES_DIR}/utils/logging.sh"
@@ -42,40 +43,7 @@ create_directories() {
 
 
 # Link dotfiles
-link_dotfiles() {
-    log_section "Linking Dotfiles"
 
-    local dotfiles=(
-        ".bashrc"
-        ".bash_profile"
-    )
-
-    local timestamp=$(date +%Y%m%d_%H%M%S)
-
-
-
-
-    for file in "${dotfiles[@]}"; do
-
-        if [ -f "$SUDO_USER_HOME/$file" ]; then
-            if [ ! -L "$SUDO_USER_HOME/$file" ]; then  # If it's not already a symlink
-                log_info "Backing up existing $file"
-                mv "$SUDO_USER_HOME/$file" "$SUDO_USER_HOME/${file}.backup_${timestamp}"
-            else
-                log_debug "$file is already a symlink"
-                continue
-            fi
-        fi
-
-        if [ -f "$DOTFILES_DIR/$file" ]; then
-            log_info "Linking $file"
-            ln -sf "$DOTFILES_DIR/$file" "$SUDO_USER_HOME/$file"
-            log_success "Linked $file"
-        else
-            log_warning "Source file $file not found in dotfiles"
-        fi
-    done
-}
 
 # Install essential packages
 install_essentials() {
@@ -92,90 +60,46 @@ install_essentials() {
 }
 
 # Install and configure components
-install_components() {
-    log_section "Installing Components"
+install_apps() {
+  log_section "Installing Applications"
 
-    # Apps installation
-    if [ -f "$DOTFILES_DIR/apps/install.sh" ]; then
-        log_info "Installing applications..."
-        bash "$DOTFILES_DIR/apps/install.sh"
-        log_success "Applications installation completed"
-    else
-        log_debug "Apps installation script not found"
-    fi
-
-    # Tooling installation
-    if [ -f "$DOTFILES_DIR/tooling/install.sh" ]; then
-        log_info "Installing tools..."
-        bash "$DOTFILES_DIR/tooling/install.sh"
-        log_success "Tools installation completed"
-    else
-        log_debug "Tooling installation script not found"
-    fi
-
-    # Programming languages installation
-    if [ -f "$DOTFILES_DIR/langs/install.sh" ]; then
-        log_info "Installing programming languages..."
-        bash "$DOTFILES_DIR/langs/install.sh"
-        log_success "Programming languages installation completed"
-    else
-        log_debug "Languages installation script not found"
-    fi
-}
-
-# Configure bash environment
-setup_bash() {
-    log_section "Setting Up Bash Environment"
-
-    if [ -f "$DOTFILES_DIR/bash/install.sh" ]; then
-        log_info "Setting up bash-it and shell configurations..."
-        # Running bash/install.sh as the current user, not root
-        sudo -u "$SUDO_USER" bash "$DOTFILES_DIR/bash/install.sh"
-        log_success "Bash environment setup completed"
-    else
-        log_error "bash/install.sh not found"
-        exit 1
-    fi
-}
-
-# Install Git
-install_git() {
-  log_section "Installing Git"
-
-  if [ -f "$DOTFILES_DIR/git/install.sh" ]; then
-    log_info "Running Git installation script"
-    bash "$DOTFILES_DIR/git/install.sh"
-    log_success "Git installation completed"
+  if [ -f "$DOTFILES_DIR/apps/install.sh" ]; then
+    log_info "Installing applications..."
+    bash "$DOTFILES_DIR/apps/install.sh"
+    log_success "Applications installation completed"
   else
-    log_error "Git installation script not found"
-    exit 1
+    log_debug "Apps installation script not found"
   fi
 }
+
+install_tooling() {
+  log_section "Installing Tooling"
+
+  if [ -f "$DOTFILES_DIR/tooling/install.sh" ]; then
+    log_info "Installing tools..."
+    bash "$DOTFILES_DIR/tooling/install.sh"
+    log_success "Tools installation completed"
+  else
+    log_debug "Tooling installation script not found"
+  fi
+}
+
+
+# Install Git
+
 
 main() {
   log_section "Starting Dotfiles Installation"
 
-  # Create directories
   create_directories
+  set_permissions
 
-  # # Install essential packages first
   install_essentials
-
-  # # Install Git
+  install_apps
   install_git
 
-  # # Link dotfiles
-  link_dotfiles
+  su -c "$DOTFILES_DIR/user-install.sh" - $SUDO_USER
 
-  # Install and configure components
-  install_components
-
-  # Setup bash environment
-  setup_bash
-
-  # Set proper permissions
-  set_permissions
-  exit
   log_success "Dotfiles installation completed successfully!"
 }
 

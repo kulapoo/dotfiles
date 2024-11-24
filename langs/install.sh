@@ -254,11 +254,11 @@ main() {
     export PATH="$HOME/.local/bin:$PATH"
 
     # Install languages
-    install_docker
+    # install_docker
     install_rust
-    install_python
+    # install_python
     install_nodejs
-    install_php
+    # install_php
 
     log_success "Programming languages installation completed!"
     log_warning "Please log out and log back in for group changes to take effect"
