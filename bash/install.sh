@@ -11,6 +11,12 @@ source "${DOTFILES_DIR}/utils/logging.sh"
 export BASH_IT="$HOME/.bash_it"
 
 
+source_bashit() {
+    echo "source $BASH_IT/bash_it.sh" >> "$HOME/.bashrc"
+    echo "export BASH_IT_THEME='metal'" >> "$HOME/.bashrc"
+    echo "export BASH_IT=\"$HOME/.bash_it\"" >> "$HOME/.bashrc"
+}
+
 # Install bash-it if not already installed
 install_bashit() {
     log_section "Installing Bash-it"
@@ -21,10 +27,10 @@ install_bashit() {
         git clone --depth=1 https://github.com/Bash-it/bash-it.git "$BASH_IT"
         "$HOME/.bash_it/install.sh" --silent --no-modify-config
         log_success "Bash-it installed successfully"
-        echo "source $BASH_IT/bash_it.sh" >> "$HOME/.bashrc"
+        source_bashit
     else
         if ! grep -q "source $BASH_IT/bash_it.sh" "$HOME/.bashrc"; then
-            echo "source $BASH_IT/bash_it.sh" >> "$HOME/.bashrc"
+            source_bashit
         fi
         log_info "Bash-it is already installed"
     fi
