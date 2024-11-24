@@ -38,41 +38,6 @@ install_git() {
   fi
 }
 
-link_dotfiles() {
-    log_section "Linking Dotfiles"
-
-    local dotfiles=(
-        ".bashrc"
-        ".bash_profile"
-    )
-
-    local timestamp=$(date +%Y%m%d_%H%M%S)
-
-
-
-
-    for file in "${dotfiles[@]}"; do
-
-        if [ -f "$HOME/$file" ]; then
-            if [ ! -L "$HOME/$file" ]; then  # If it's not already a symlink
-                log_info "Backing up existing $file"
-                mv "$HOME/$file" "$HOME/${file}.backup_${timestamp}"
-            else
-                log_debug "$file is already a symlink"
-                continue
-            fi
-        fi
-
-        if [ -f "$DOTFILES_DIR/$file" ]; then
-            log_info "Linking $file"
-            ln -sf "$DOTFILES_DIR/$file" "$HOME/$file"
-            log_success "Linked $file"
-        else
-            log_warning "Source file $file not found in dotfiles"
-        fi
-    done
-}
-
 
 setup_bash() {
     log_section "Setting Up Bash Environment"
@@ -93,7 +58,6 @@ main() {
 
   install_langs
 
-  link_dotfiles
   setup_bash
 
 }
