@@ -26,7 +26,6 @@ create_directories() {
         "$SUDO_USER_HOME/.local/bin"
         "$SUDO_USER_HOME/.cache"
         "$SUDO_USER_HOME/Development"
-        "$SUDO_USER_HOME/.ssh"
     )
 
     for dir in "${directories[@]}"; do
