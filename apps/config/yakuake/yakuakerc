@@ -9,8 +9,7 @@ DefaultProfile=Profile 1
 FirstRun=false
 
 [Shortcuts]
-close-active-terminal=Ctrl+Shift+R
-close-session=Ctrl+Shift+W
+close-active-terminal=Ctrl+Shift+|
 decrease-window-height=Alt+Shift+Up
 decrease-window-width=Alt+Shift+Left
 increase-window-height=Alt+Shift+Down

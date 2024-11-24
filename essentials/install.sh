@@ -38,7 +38,7 @@ install_snap() {
 }
 
 
-install_dev_tools() {
+install_general() {
     log_section "Installing Development Tools"
 
     local dev_packages=(
@@ -74,7 +74,8 @@ install_system_utils() {
         "apt-transport-https"
         "ca-certificates"
         "gnupg"
-        "lsb-release"
+        "lsb-release",
+        "fonts-powerline"
     )
 
     for package in "${utils_packages[@]}"; do
@@ -101,6 +102,38 @@ install_vcs() {
     fi
 }
 
+# Install flatpak and configure flathub
+install_flatpak() {
+  log_section "Installing Flatpak and Configuring Flathub"
+
+  if ! command_exists flatpak; then
+    log_info "Installing flatpak..."
+    sudo apt update
+    sudo apt install -y flatpak
+    log_success "flatpak installed successfully"
+  else
+    log_info "flatpak is already installed"
+  fi
+
+  if ! flatpak remote-list | grep -q flathub; then
+    log_info "Adding Flathub repository..."
+    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    log_success "Flathub repository added successfully"
+  else
+    log_info "Flathub repository is already added"
+  fi
+
+  if ! dpkg -l | grep -q "^ii  gnome-software-plugin-flatpak "; then
+    log_info "Installing GNOME Software plugin for Flatpak..."
+    sudo apt install -y gnome-software-plugin-flatpak
+    log_success "GNOME Software plugin for Flatpak installed successfully"
+  else
+    log_info "GNOME Software plugin for Flatpak is already installed"
+  fi
+
+  log_success "GNOME Software plugin for Flatpak installed successfully"
+}
+
 # Main installation function
 main() {
     log_section "Starting Essential Packages Installation"
@@ -108,10 +141,11 @@ main() {
     # Update package list
     log_info "Updating package list..."
     sudo apt-get update
-    # Install snap
     install_snap
+    install_flatpak
     # Install packages
-    install_dev_tools
+    install_general
+    install_vcs
     install_system_utils
 
 
