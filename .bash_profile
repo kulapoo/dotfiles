@@ -34,6 +34,4 @@ if [ -d "$HOME/.profile.d" ]; then
         fi
     done
 fi
-
-
 . "$HOME/.cargo/env"
