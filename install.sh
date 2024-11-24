@@ -95,7 +95,6 @@ main() {
 
   install_essentials
   install_apps
-  install_git
 
   su -c "$DOTFILES_DIR/user-install.sh" - $SUDO_USER
 

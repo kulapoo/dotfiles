@@ -11,30 +11,6 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Install Docker and Docker Compose
-install_docker() {
-  log_section "Installing Docker"
-
-  if ! command_exists docker; then
-    log_info "Installing Docker using Homebrew..."
-
-    # Install Docker
-    brew install --cask docker
-
-    log_success "Docker installed successfully"
-  else
-    log_info "Docker is already installed"
-  fi
-
-  # Install docker-compose if not already installed
-  if ! command_exists docker-compose; then
-    log_info "Installing Docker Compose using Homebrew..."
-    brew install docker-compose
-    log_success "Docker Compose installed successfully"
-  else
-    log_info "Docker Compose is already installed"
-  fi
-}
 
 # Install Rust and Cargo
 install_rust() {
@@ -270,7 +246,6 @@ main() {
     export PATH="$HOME/.local/bin:$PATH"
 
     # Install languages
-    install_docker
     install_rust
     install_python
     install_nodejs

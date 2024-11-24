@@ -18,7 +18,7 @@ install_langs() {
 
   if [ -f "$DOTFILES_DIR/langs/install.sh" ]; then
     log_info "Installing programming languages..."
-    bash "$DOTFILES_DIR/langs/install.sh"
+    bash -c "$DOTFILES_DIR/langs/install.sh"
     log_success "Programming languages installation completed"
   else
     log_debug "Languages installation script not found"
@@ -30,10 +30,23 @@ install_git() {
 
   if [ -f "$DOTFILES_DIR/git/install.sh" ]; then
     log_info "Running Git installation script"
-    bash "$DOTFILES_DIR/git/install.sh"
+    bash -c "$DOTFILES_DIR/git/install.sh"
     log_success "Git installation completed"
   else
     log_error "Git installation script not found"
+    exit 1
+  fi
+}
+
+install_fzf() {
+  log_section "Installing fzf"
+
+  if [ -f "$DOTFILES_DIR/fzf/install.sh" ]; then
+    log_info "Running fzf installation script"
+    bash -c "$DOTFILES_DIR/fzf/install.sh"
+    log_success "fzf installation completed"
+  else
+    log_error "fzf installation script not found"
     exit 1
   fi
 }
@@ -45,7 +58,7 @@ setup_bash() {
     if [ -f "$DOTFILES_DIR/bash/install.sh" ]; then
         log_info "Setting up bash-it and shell configurations..."
         # Running bash/install.sh as the current user, not root
-        sudo -u "$SUDO_USER" bash "$DOTFILES_DIR/bash/install.sh"
+        bash -c "$DOTFILES_DIR/bash/install.sh"
         log_success "Bash environment setup completed"
     else
         log_error "bash/install.sh not found"
