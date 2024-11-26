@@ -101,17 +101,13 @@ install_youtube_music() {
 
 # Sublime Text
 install_sublime() {
-    if ! command -v subl &> /dev/null; then
-        log_info "Installing Sublime Text..."
-        wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg > /dev/null
-        echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
-        sudo apt-get update
-        sudo apt-get install sublime-text
-    else
-        log_info "Sublime Text is already installed"
-    fi
+  if ! command -v subl &> /dev/null; then
+    log_info "Installing Sublime Text..."
+    sudo snap install sublime-text --classic
+  else
+    log_info "Sublime Text is already installed"
+  fi
 }
-
 
 # VSCode
 install_vscode() {
@@ -137,20 +133,15 @@ install_yakuake() {
 }
 
 install_sublime_merge() {
-    if ! command -v smerge &> /dev/null; then
-        log_info "Installing Sublime Merge..."
-
-        wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg > /dev/null
-        echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
-        sudo apt-get update
-        sudo apt-get install sublime-merge
-    else
-        log_info "Sublime merge is already installed"
-    fi
+  if ! command -v smerge &> /dev/null; then
+    log_info "Installing Sublime Merge..."
+    sudo snap install sublime-merge --classic
+  else
+    log_info "Sublime Merge is already installed"
+  fi
 }
 
 
-install_sublime_merge
 
 # Konsole
 install_konsole() {
@@ -218,7 +209,6 @@ main() {
     # Install applications one by one
     install_vscode
     install_chrome
-    install_sublime
     install_vlc
     install_discord
     install_youtube_music
@@ -230,6 +220,9 @@ main() {
     install_dconf
     install_stacer
     install_powerline_fonts
+    install_sublime
+    install_sublime_merge
+
 
     log_info "Applications installation complete!"
 }
