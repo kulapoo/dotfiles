@@ -103,19 +103,15 @@ install_youtube_music() {
 install_sublime() {
     if ! command -v subl &> /dev/null; then
         log_info "Installing Sublime Text..."
-        wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
-        sudo apt-get install -y apt-transport-https
+        wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/sublimehq-archive.gpg > /dev/null
         echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
         sudo apt-get update
-        sudo apt-get install -y sublime-text
-
-        # Sublime Text configuration
-        mkdir -p "$SUDO_USER_HOME/.config/sublime-text-3/Packages/User/"
-        cp "$SCRIPT_DIR/configs/sublime/Preferences.sublime-settings" "$SUDO_USER_HOME/.config/sublime-text-3/Packages/User/"
+        sudo apt-get install sublime-text
     else
         log_info "Sublime Text is already installed"
     fi
 }
+
 
 # VSCode
 install_vscode() {
@@ -135,14 +131,6 @@ install_yakuake() {
     if ! command -v yakuake &> /dev/null; then
         log_info "Installing Yakuake..."
         sudo apt-get install -y yakuake
-
-        # Yakuake configuration
-        mkdir -p "$SUDO_USER_HOME/.config/yakuake"
-        cp "$SCRIPT_DIR/configs/yakuake/yakuakerc" "$SUDO_USER_HOME/.config/yakuake/"
-
-        # Set up autostart
-        mkdir -p "$SUDO_USER_HOME/.config/autostart"
-        cp "/usr/share/applications/org.kde.yakuake.desktop" "$SUDO_USER_HOME/.config/autostart/"
     else
         log_info "Yakuake is already installed"
     fi
