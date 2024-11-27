@@ -30,6 +30,21 @@ install_chrome() {
     fi
 }
 
+install_appimagelauncher() {
+  log_section "Installing AppImageLauncher"
+  if ! command_exists appimagelauncher; then
+    log_info "Installing AppImageLauncher from PPA..."
+    sudo apt-get install -y software-properties-common
+    sudo add-apt-repository -y ppa:appimagelauncher-team/stable
+    sudo apt-get update
+    sudo apt-get install -y appimagelauncher
+    log_success "AppImageLauncher installed successfully"
+  else
+    log_info "AppImageLauncher is already installed"
+  fi
+}
+
+
 # Flameshot
 install_flameshot() {
     if ! command -v flameshot &> /dev/null; then
@@ -198,6 +213,16 @@ EOL
     fi
 }
 
+# Menulibre
+install_menulibre() {
+  if ! command -v menulibre &> /dev/null; then
+    log_info "Installing Menulibre..."
+    sudo apt-get install -y menulibre
+  else
+    log_info "Menulibre is already installed"
+  fi
+}
+
 # Main installation function
 main() {
     log_info "Starting applications installation..."
@@ -222,6 +247,9 @@ main() {
     install_powerline_fonts
     install_sublime
     install_sublime_merge
+    install_appimagelauncher
+    install_menulibre
+
 
 
     log_info "Applications installation complete!"
