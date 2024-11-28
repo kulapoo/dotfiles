@@ -80,11 +80,6 @@ if [ -f ~/.fzf.bash ]; then
     export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 fi
 
-# Linuxbrew Configuration
-if [ -d "/home/linuxbrew/.linuxbrew" ]; then
-    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-fi
-
 # ====================
 # Application Settings
 # ====================
@@ -144,6 +139,8 @@ alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 alias ln='ln -i'
+
+alias python='python3'
 
 # ====================
 # Custom Functions

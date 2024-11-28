@@ -42,3 +42,8 @@ log_debug() {
 log_section() {
     echo -e "\n${COLOR_BOLD_CYAN}=== $1 ===${COLOR_NC}\n"
 }
+
+
+function gbr {
+  git rev-parse --abbrev-ref HEAD
+}
