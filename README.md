@@ -22,6 +22,13 @@ After installing Homebrew, you can run the install script with the following com
 ```sh
 sudo ./install.sh
 ```
+## Todo
+- [ ] Add options to install specific packages.
+- [ ] Add options to install specific applications.
+- [ ] Add options to install specific fonts.
+- [ ] Add options to install specific themes.
+- [ ] Add options to install extra tooling.
+- [ ] Add options to install specific configurations.
 
 
 ## License

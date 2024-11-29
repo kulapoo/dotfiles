@@ -178,40 +178,6 @@ install_virtualbox() {
   fi
 }
 
-# Powerline Fonts
-install_powerline_fonts() {
-    if ! fc-list | grep -i "powerline" &> /dev/null; then
-        log_info "Installing Powerline fonts..."
-        sudo apt-get install -y fonts-powerline
-
-        # Create required directories
-        log_info "Setting up font configuration..."
-        mkdir -p "$SUDO_USER_HOME/.config/fontconfig/conf.d"
-
-        # Create fontconfig file
-        cat > "$SUDO_USER_HOME/.config/fontconfig/conf.d/10-powerline-symbols.conf" << 'EOL'
-<?xml version="1.0"?>
-<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-<fontconfig>
-    <alias>
-        <family>Terminess Powerline</family>
-        <prefer>
-            <family>PowerlineSymbols</family>
-        </prefer>
-    </alias>
-    <dir>~/.fonts</dir>
-</fontconfig>
-EOL
-
-        # Update font cache
-        log_info "Updating font cache..."
-        fc-cache -vf
-
-        log_success "Powerline fonts installation completed"
-    else
-        log_info "Powerline fonts are already installed"
-    fi
-}
 
 # Menulibre
 install_menulibre() {
@@ -244,11 +210,11 @@ main() {
     install_konsole
     install_dconf
     install_stacer
-    install_powerline_fonts
     install_sublime
     install_sublime_merge
     install_appimagelauncher
     install_menulibre
+    install_virtualbox
 
 
 
