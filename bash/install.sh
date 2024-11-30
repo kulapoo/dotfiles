@@ -12,9 +12,20 @@ export BASH_IT="$HOME/.bash_it"
 
 
 source_bashit() {
-    echo "source $BASH_IT/bash_it.sh" >> "$HOME/.bashrc"
     echo "export BASH_IT_THEME='metal'" >> "$HOME/.bashrc"
     echo "export BASH_IT=\"$HOME/.bash_it\"" >> "$HOME/.bashrc"
+    echo 'source $BASH_IT/bash_it.sh' >> "$HOME/.bashrc"
+}
+
+source_fzf() {
+  if command -v fzf > /dev/null 2>&1; then
+    echo 'eval "$(fzf --bash)"' >> "$HOME/.bashrc"
+  fi
+}
+
+source_tools() {
+  source_bashit
+  source_fzf
 }
 
 # Install bash-it if not already installed
@@ -22,15 +33,14 @@ install_bashit() {
     log_section "Installing Bash-it"
 
     if [ ! -d "$HOME/.bash_it" ]; then
-
         log_info "Cloning bash-it repository..."
         git clone --depth=1 https://github.com/Bash-it/bash-it.git "$BASH_IT"
         "$HOME/.bash_it/install.sh" --silent --no-modify-config
         log_success "Bash-it installed successfully"
-        source_bashit
+        source_tools
     else
         if ! grep -q "source $BASH_IT/bash_it.sh" "$HOME/.bashrc"; then
-            source_bashit
+            source_tools
         fi
         log_info "Bash-it is already installed"
     fi

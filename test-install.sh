@@ -8,13 +8,11 @@ DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "${DOTFILES_DIR}/utils/logging.sh"
 
 
-install_sublime_merge() {
-  if ! command -v smerge &> /dev/null; then
-    log_info "Installing Sublime Merge..."
-    sudo snap install sublime-merge --classic
-  else
-    log_info "Sublime Merge is already installed"
+source_fzf() {
+  if command -v fzf > /dev/null 2>&1; then
+    echo 'eval "$(fzf --bash)"' >> "$HOME/.bashrc"
   fi
 }
 
-install_sublime_merge
+
+source_fzf

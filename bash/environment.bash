@@ -72,13 +72,8 @@ add_to_path "$GOPATH/bin"
 # Tool Configuration
 # ====================
 
-# FZF Configuration
-if [ -f ~/.fzf.bash ]; then
-    source ~/.fzf.bash
-    export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-    export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
-    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-fi
+
+
 
 # ====================
 # Application Settings
