@@ -72,41 +72,6 @@ install_python() {
   else
     log_info "Python is already installed"
   fi
-
-  # Install pyenv for Python version management
-  if ! command_exists pyenv; then
-    log_info "Installing pyenv..."
-    brew install pyenv
-
-    # Add pyenv to PATH
-    export PATH="$HOME/.pyenv/bin:$PATH"
-    eval "$(pyenv init --path)"
-    eval "$(pyenv init -)"
-
-    log_success "pyenv installed successfully"
-  else
-    log_info "pyenv is already installed"
-  fi
-
-  # Install common Python packages
-  log_info "Installing common Python packages..."
-  local python_packages=(
-    "pipx"          # Install and run Python applications in isolated environments
-    "black"         # Code formatter
-    "flake8"        # Linter
-    "mypy"          # Static type checker
-    "pytest"        # Testing framework
-    "ipython"       # Enhanced interactive Python shell
-  )
-
-  for package in "${python_packages[@]}"; do
-    if ! pip3 show "$package" > /dev/null 2>&1; then
-      pip3 install --user "$package"
-      log_success "$package installed successfully"
-    else
-      log_info "$package is already installed"
-    fi
-  done
 }
 
 install_nodejs() {
