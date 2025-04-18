@@ -47,3 +47,43 @@ log_section() {
 function gbr {
   git rev-parse --abbrev-ref HEAD
 }
+
+extract () {
+    if [ -f $1 ]; then
+        case $1 in
+            *.tar.bz2)  tar -jxvf $1                        ;;
+            *.tar.gz)   tar -zxvf $1                        ;;
+            *.bz2)      bunzip2 $1                          ;;
+            *.dmg)      hdiutil mount $1                    ;;
+            *.gz)       gunzip $1                           ;;
+            *.tar)      tar -xvf $1                         ;;
+            *.tbz2)     tar -jxvf $1                        ;;
+            *.tgz)      tar -zxvf $1                        ;;
+            *.zip)      unzip $1                            ;;
+            *.ZIP)      unzip $1                            ;;
+            *.pax)      cat $1 | pax -r                     ;;
+            *.pax.Z)    uncompress $1 --stdout | pax -r     ;;
+            *.rar)      unrar x $1                          ;;
+            *.Z)        uncompress $1                       ;;
+            *)          echo "'$1' cannot be extracted/mounted via extract()" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+# This function duplicates the current Yakuake tab and changes to the previous directory
+dup() {
+  # Store current directory
+  CURRENT_DIR=$(pwd)
+
+  # Open a new tab
+  dbus-send --session --type=method_call --dest=org.kde.yakuake /yakuake/sessions org.kde.yakuake.addSession > /dev/null
+
+  # Small delay to ensure tab is ready
+  sleep 0.1
+
+  # Run cd command in the new tab to change to the previous directory
+  dbus-send --session --type=method_call --dest=org.kde.yakuake /yakuake/sessions org.kde.yakuake.runCommandInTerminal string:"cd '$CURRENT_DIR'"
+}
+

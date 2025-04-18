@@ -152,4 +152,33 @@ mkcd() {
     mkdir -p "$@" && cd "$_"
 }
 
+# Generate a new file with full path, creating directories as needed
+touchp() { mkdir -p "$(dirname "$1")" && touch "$1"; }
+
+# Show all open ports
+alias ports='netstat -tulanp'
+
+# IP address info
+alias myip='curl -s https://api.ipify.org'
+alias localip='ifconfig | grep -Eo "inet (addr:)?([0-9]*\.){3}[0-9]*" | grep -Eo "([0-9]*\.){3}[0-9]*" | grep -v "127.0.0.1"'
+
+# Resource monitoring
+alias meminfo='free -m -l -t'
+alias cpuinfo='lscpu'
+alias topproc='ps aux | sort -rk 3,3 | head -n 10'  # Top 10 CPU consuming processes
+
+# Disk usage in human readable format
+alias duh='du -h'
+alias dfh='df -h'
+
+# Show directory sizes
+dsize() { du -sh "$@" | sort -h; }
+
+
+# File searching and content searching
+ff() { find . -type f -name "$1"; }         # Find files by name
+ftext() { grep -r "$1" .; }                 # Find text in files
+
+
+
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
