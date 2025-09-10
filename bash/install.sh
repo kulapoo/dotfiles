@@ -12,14 +12,26 @@ export BASH_IT="$HOME/.bash_it"
 
 
 source_bashit() {
-    echo "export BASH_IT_THEME='metal'" >> "$HOME/.bashrc"
-    echo "export BASH_IT=\"$HOME/.bash_it\"" >> "$HOME/.bashrc"
-    echo 'source $BASH_IT/bash_it.sh' >> "$HOME/.bashrc"
+    # Check if bash-it is already sourced in .bashrc
+    if ! grep -q "source \$BASH_IT/bash_it.sh" "$HOME/.bashrc" 2>/dev/null; then
+        echo "export BASH_IT_THEME='metal'" >> "$HOME/.bashrc"
+        echo "export BASH_IT=\"$HOME/.bash_it\"" >> "$HOME/.bashrc"
+        echo 'source $BASH_IT/bash_it.sh' >> "$HOME/.bashrc"
+        log_info "Added bash-it to .bashrc"
+    else
+        log_debug "bash-it already configured in .bashrc"
+    fi
 }
 
 source_fzf() {
   if command -v fzf > /dev/null 2>&1; then
-    echo 'eval "$(fzf --bash)"' >> "$HOME/.bashrc"
+    # Check if fzf is already configured in .bashrc
+    if ! grep -q 'eval "$(fzf --bash)"' "$HOME/.bashrc" 2>/dev/null; then
+        echo 'eval "$(fzf --bash)"' >> "$HOME/.bashrc"
+        log_info "Added fzf to .bashrc"
+    else
+        log_debug "fzf already configured in .bashrc"
+    fi
   fi
 }
 

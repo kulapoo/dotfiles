@@ -1,10 +1,17 @@
 #!/bin/bash
 
+set -euo pipefail
+
 # Script directory
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 SUDO_USER_HOME=$(getent passwd $SUDO_USER | cut -d: -f6)
 
 source "${SCRIPT_DIR}/utils/logging.sh"
+
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
 
 
 # VLC
@@ -137,13 +144,13 @@ install_vscode() {
     fi
 }
 
-# Yakuake
-install_yakuake() {
-    if ! command -v yakuake &> /dev/null; then
-        log_info "Installing Yakuake..."
-        sudo apt-get install -y yakuake
+# Guake (drop-down terminal)
+install_guake() {
+    if ! command -v guake &> /dev/null; then
+        log_info "Installing Guake..."
+        sudo apt-get install -y guake
     else
-        log_info "Yakuake is already installed"
+        log_info "Guake is already installed"
     fi
 }
 
@@ -156,17 +163,6 @@ install_sublime_merge() {
   fi
 }
 
-
-
-# Konsole
-install_konsole() {
-    if ! command -v konsole &> /dev/null; then
-        log_info "Installing Konsole..."
-        sudo apt-get install -y konsole
-    else
-        log_info "Konsole is already installed"
-    fi
-}
 
 # VirtualBox
 install_virtualbox() {
@@ -206,7 +202,7 @@ main() {
     install_flameshot
     install_bitwarden
     install_obsidian
-    install_yakuake
+    install_guake
     install_konsole
     install_dconf
     install_stacer

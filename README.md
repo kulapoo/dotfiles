@@ -1,26 +1,67 @@
 # README
 
+## Overview
+
+This dotfiles repository provides a comprehensive, idempotent installation system for setting up a development environment on Linux/Unix systems. It includes automated installation of development tools, programming languages, and applications.
+
 ## Prerequisites
 
-Before you begin, ensure you have met the following requirements:
-- You have installed [Homebrew](https://brew.sh/).
-- Set up the environment for Homebrew.
+- Ubuntu/Debian-based Linux distribution
+- `curl` or `wget` installed
+- `sudo` access for system-wide installations
 
-### Installing Homebrew
+## Installation
 
-
-To install Homebrew, run the following command in your terminal:
-
-```sh
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-## Running the Install Script
-
-After installing Homebrew, you can run the install script with the following command:
+Run the main installation script with sudo:
 
 ```sh
 sudo ./install.sh
+```
+
+This will:
+1. Install Homebrew package manager automatically
+2. Set up essential system packages
+3. Configure Bash environment with Bash-it
+4. Install programming languages (Python via uv, Node.js via nvm, Rust, PHP)
+5. Set up development tools (Docker, Git, etc.)
+6. Install desktop applications
+
+## Features
+
+### 🔄 Idempotent Installation
+- Scripts can be run multiple times safely
+- Checks for existing installations before proceeding
+- No duplicate configurations or PATH entries
+
+### 🐍 Modern Python Management
+- Uses `uv` for Python version management (similar to nvm for Node.js)
+- Pre-configured helper functions for virtual environments
+- Essential Python tools pre-installed
+
+### 📦 Package Managers
+- Homebrew for command-line tools
+- Flatpak for desktop applications
+- Snap for additional packages
+- All package managers installed automatically
+
+### 🛠️ Development Tools
+- Docker and Docker Compose
+- Git with global configuration
+- VS Code, Sublime Text, and other editors
+- Guake drop-down terminal
+
+## Verification
+
+Check installation status:
+
+```sh
+./verify-installation.sh
+```
+
+Test idempotency:
+
+```sh
+./test-idempotency.sh
 ```
 ## Todo
 - [ ] Add options to install specific packages.

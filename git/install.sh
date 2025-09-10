@@ -28,23 +28,34 @@ configure_git() {
     # Setup git config to use our global gitignore
     git config --global core.excludesfile ~/.gitignore_global
 
-    # Prompt for user information if not already configured
-    if [ -z "$(git config --global user.name)" ]; then
-      log_info "Git user name not set. Prompting for input..."
-      read -p "Enter your Git name: " git_name
-      git config --global user.name "$git_name"
-      log_success "Git user name configured"
-    else
-      log_info "Git user name is already configured"
-    fi
+    # Check if we're in an interactive session
+    if [ -t 0 ]; then
+      # Prompt for user information if not already configured
+      if [ -z "$(git config --global user.name)" ]; then
+        log_info "Git user name not set. Prompting for input..."
+        read -p "Enter your Git name: " git_name
+        git config --global user.name "$git_name"
+        log_success "Git user name configured"
+      else
+        log_info "Git user name is already configured: $(git config --global user.name)"
+      fi
 
-    if [ -z "$(git config --global user.email)" ]; then
-      log_info "Git email not set. Prompting for input..."
-      read -p "Enter your Git email: " git_email
-      git config --global user.email "$git_email"
-      log_success "Git email configured"
+      if [ -z "$(git config --global user.email)" ]; then
+        log_info "Git email not set. Prompting for input..."
+        read -p "Enter your Git email: " git_email
+        git config --global user.email "$git_email"
+        log_success "Git email configured"
+      else
+        log_info "Git email is already configured: $(git config --global user.email)"
+      fi
     else
-      log_info "Git email is already configured"
+      # Non-interactive mode - skip prompts
+      if [ -z "$(git config --global user.name)" ]; then
+        log_warning "Git user name not configured. Run 'git config --global user.name \"Your Name\"' manually"
+      fi
+      if [ -z "$(git config --global user.email)" ]; then
+        log_warning "Git email not configured. Run 'git config --global user.email \"your.email@example.com\"' manually"
+      fi
     fi
 }
 

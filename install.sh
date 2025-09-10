@@ -97,15 +97,25 @@ install_tooling() {
 main() {
   log_section "Starting Dotfiles Installation"
 
+  # First create essential directories and set permissions
   create_directories
   set_permissions
 
+  # Install essential packages (includes apt packages, snap, flatpak)
   install_essentials
+  
+  # Install tooling (docker, development tools) - may be needed by user scripts
+  install_tooling
+  
+  # Run user-specific installations (homebrew, languages, bash setup)
+  log_info "Running user installations..."
+  su -c "$DOTFILES_DIR/user-install.sh" - $SUDO_USER
+  
+  # Install applications last (depends on snap/flatpak from essentials)
   install_apps
 
-  su -c "$DOTFILES_DIR/user-install.sh" - $SUDO_USER
-
   log_success "Dotfiles installation completed successfully!"
+  log_warning "Please log out and log back in for all changes to take effect"
 }
 
 # Set proper permissions

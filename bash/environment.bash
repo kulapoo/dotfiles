@@ -49,10 +49,18 @@ if [ -s "$NVM_DIR/nvm.sh" ]; then
     source "$NVM_DIR/bash_completion"
 fi
 
-# Python Configuration
+# Python Configuration (using uv)
 export PYTHONDONTWRITEBYTECODE=1
 export PYTHONUNBUFFERED=1
 export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+# UV Python manager
+export UV_CACHE_DIR="$HOME/.cache/uv"
+export UV_TOOL_DIR="$HOME/.local/share/uv/tools"
+add_to_path "$HOME/.local/share/uv/tools/bin"
+add_to_path "$HOME/.cargo/bin"  # uv is installed via cargo
+
+# Legacy poetry support (if still needed)
 add_to_path "$HOME/.poetry/bin"
 
 # Rust Configuration
@@ -135,8 +143,11 @@ alias cp='cp -i'
 alias mv='mv -i'
 alias ln='ln -i'
 
-alias python='python3'
-alias pip='pip3'
+# Python aliases (using uv)
+alias python='uv run python'
+alias pip='uv pip'
+alias python3='uv run python'
+alias pip3='uv pip'
 
 # ====================
 # Custom Functions

@@ -22,9 +22,9 @@ install_rust() {
         export RUSTUP_HOME="$HOME/.rustup"
         export CARGO_HOME="$HOME/.cargo"
 
-        # Install Rust without modifying path
+        # Install Rust without modifying path (latest stable)
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
-            RUSTUP_UPDATE_ROOT="" sh -s -- -y --no-modify-path
+            sh -s -- -y --no-modify-path --default-toolchain stable
 
         # Manually set up the environment
         export PATH="$HOME/.cargo/bin:$PATH"
@@ -60,18 +60,73 @@ install_rust() {
         rustup update
     fi
 }
-# Install Python and tools
+# Install Python and tools using uv
 install_python() {
-  log_section "Installing Python"
+  log_section "Installing Python with uv"
 
-  # Install Python and pip using Homebrew
-  if ! command_exists python3; then
-    log_info "Installing Python and dependencies using Homebrew..."
-    brew install python
-    log_success "Python installed successfully"
+  # Install uv if not already installed
+  if ! command_exists uv; then
+    log_info "Installing uv (Python package and project manager)..."
+    
+    # Install uv using the official installer
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    
+    # Add uv to PATH for current session (uv installs to .cargo/bin)
+    export PATH="$HOME/.cargo/bin:$PATH"
+    
+    # Source the uv completions if available
+    if [ -f "$HOME/.cargo/bin/uv" ]; then
+      eval "$($HOME/.cargo/bin/uv generate-shell-completion bash)"
+    fi
+    
+    log_success "uv installed successfully"
   else
-    log_info "Python is already installed"
+    log_info "uv is already installed"
+    # Self-update uv
+    log_info "Updating uv..."
+    uv self-update || log_info "uv is already at the latest version"
   fi
+
+  # Install Python using uv
+  log_info "Installing Python using uv..."
+  
+  # Install the latest stable Python version
+  uv python install
+  
+  # List available Python versions
+  log_info "Available Python versions:"
+  uv python list
+  
+  # Install commonly used Python tools globally
+  log_info "Installing common Python tools..."
+  
+  # Create a tools directory for global installations
+  mkdir -p "$HOME/.local/share/uv-tools"
+  
+  # Install essential Python tools
+  local python_tools=(
+    "ruff"          # Fast Python linter and formatter
+    "mypy"          # Static type checker
+    "black"         # Code formatter
+    "pytest"        # Testing framework
+    "ipython"       # Enhanced Python REPL
+    "poetry"        # Dependency management
+    "pipx"          # Install Python apps in isolated environments
+    "pre-commit"    # Git hook framework
+  )
+  
+  for tool in "${python_tools[@]}"; do
+    log_info "Installing $tool..."
+    uv tool install "$tool" || log_warning "Failed to install $tool"
+  done
+  
+  log_success "Python and tools installed successfully"
+  
+  # Inform user about environment setup
+  log_info "Note: uv manages Python versions similar to nvm for Node.js"
+  log_info "Use 'uv python list' to see available versions"
+  log_info "Use 'uv python install <version>' to install a specific version"
+  log_info "Use 'uv venv' to create virtual environments"
 }
 
 install_nodejs() {
@@ -82,8 +137,12 @@ install_nodejs() {
         # Set NVM environment variables
         export NVM_DIR="$HOME/.nvm"
 
+        # Get the latest NVM version
+        NVM_LATEST=$(curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | grep -oP '"tag_name": "\K[^"]*')
+        
         # Install nvm without automatic profile modifications
-        PROFILE="/dev/null" curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+        log_info "Installing NVM ${NVM_LATEST}..."
+        PROFILE="/dev/null" curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_LATEST}/install.sh" | bash
 
         # Create NVM directory if it doesn't exist
         mkdir -p "$NVM_DIR"
@@ -149,9 +208,17 @@ install_php() {
 
   # Install Composer
   if ! command_exists composer; then
-    log_info "Installing Composer..."
+    log_info "Installing Composer (latest version)..."
+    EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-    php -r "if (hash_file('sha384', 'composer-setup.php') === '$(curl -sS https://composer.github.io/installer.sig)') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+    ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
+    
+    if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]; then
+        log_error "Composer installer checksum mismatch"
+        rm composer-setup.php
+        return 1
+    fi
+    
     sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
     php -r "unlink('composer-setup.php');"
     log_success "Composer installed successfully"
