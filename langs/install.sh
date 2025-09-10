@@ -179,12 +179,7 @@ install_nodejs() {
         done
 
         log_success "Node.js installed successfully"
-
-        # Inform user about required environment setup
-        log_info "Note: Add the following lines to your shell configuration file:"
-        log_info 'export NVM_DIR="$HOME/.nvm"'
-        log_info '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
-        log_info '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"'
+        log_info "NVM will be available through bash-it custom environment configuration"
 
     else
         log_info "Node.js is already installed"
