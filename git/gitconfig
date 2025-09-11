@@ -1,6 +1,6 @@
 [core]
     editor = vim
-	excludesfile = /root/.gitignore_global
+	excludesfile = /home/jpt/.gitignore_global
     whitespace = trailing-space,space-before-tab
     autocrlf = input
     safecrlf = true

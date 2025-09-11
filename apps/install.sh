@@ -203,16 +203,12 @@ main() {
     install_bitwarden
     install_obsidian
     install_guake
-    install_konsole
     install_dconf
     install_stacer
     install_sublime
     install_sublime_merge
     install_appimagelauncher
     install_menulibre
-    install_virtualbox
-
-
 
     log_info "Applications installation complete!"
 }
