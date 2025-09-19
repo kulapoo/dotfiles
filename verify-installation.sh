@@ -17,14 +17,17 @@ WARNINGS=0
 check() {
     local check_name="$1"
     local check_command="$2"
-    local severity="${3:-error}"  # error or warning
+    local severity="${3:-error}"  # error, warning, or optional
     
     if eval "$check_command" 2>/dev/null; then
         log_success "✓ $check_name"
         ((CHECKS_PASSED++))
         return 0
     else
-        if [ "$severity" == "warning" ]; then
+        if [ "$severity" == "optional" ]; then
+            log_info "○ $check_name (optional)"
+            return 0
+        elif [ "$severity" == "warning" ]; then
             log_warning "⚠ $check_name"
             ((WARNINGS++))
             return 0
@@ -50,7 +53,7 @@ check_system() {
 check_package_managers() {
     log_section "Package Managers"
     
-    check "Homebrew installed" "command -v brew" "warning"
+    check "Homebrew installed" "command -v brew" "optional"
     check "snap installed" "command -v snap"
     check "flatpak installed" "command -v flatpak"
     check "Flathub repository configured" "flatpak remote-list | grep -q flathub" "warning"
@@ -130,7 +133,7 @@ check_path() {
     log_section "PATH Configuration"
     
     check "~/.local/bin in PATH" "echo \$PATH | grep -q '$HOME/.local/bin'" "warning"
-    check "Homebrew in PATH" "echo \$PATH | grep -q 'linuxbrew'" "warning"
+    check "Homebrew in PATH" "echo \$PATH | grep -q 'linuxbrew'" "optional"
     check "Cargo bin in PATH" "echo \$PATH | grep -q '.cargo/bin'" "warning"
 }
 

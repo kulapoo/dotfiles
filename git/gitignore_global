@@ -130,3 +130,7 @@ pids
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+
+# AI config 
+.claude/

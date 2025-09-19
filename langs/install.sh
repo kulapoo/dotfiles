@@ -194,35 +194,60 @@ install_php() {
   log_section "Installing PHP"
 
   if ! command_exists php; then
-    log_info "Installing PHP and common extensions using Homebrew..."
-    brew install php
-    log_success "PHP installed successfully"
+    if command_exists brew; then
+      log_info "[install_php] Installing PHP and common extensions using Homebrew..."
+      if brew install php 2>/dev/null; then
+        log_success "[install_php] PHP installed successfully via Homebrew"
+      else
+        log_error "[install_php] Failed to install PHP via Homebrew"
+        return 1
+      fi
+    else
+      log_warning "[install_php] PHP is not installed and Homebrew is not available"
+      log_info "[install_php] Please ensure PHP is installed via system-install.sh first"
+      log_info "[install_php] Or install Homebrew to install PHP at user level"
+      return 1
+    fi
   else
-    log_info "PHP is already installed"
+    log_info "[install_php] PHP is already installed"
   fi
 
   # Install Composer
   if ! command_exists composer; then
-    log_info "Installing Composer (latest version)..."
+    log_info "Installing Composer (latest version) to user directory..."
+
+    # Install Composer to user's local bin directory
+    COMPOSER_DIR="$HOME/.local/bin"
+    mkdir -p "$COMPOSER_DIR"
+
     EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
     ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
-    
+
     if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]; then
         log_error "Composer installer checksum mismatch"
         rm composer-setup.php
         return 1
     fi
-    
-    sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+
+    # Install to user's local bin without sudo
+    php composer-setup.php --install-dir="$COMPOSER_DIR" --filename=composer
     php -r "unlink('composer-setup.php');"
-    log_success "Composer installed successfully"
+
+    # Make sure it's executable
+    chmod +x "$COMPOSER_DIR/composer"
+
+    # Add to PATH if not already there
+    export PATH="$COMPOSER_DIR:$PATH"
+
+    log_success "Composer installed successfully to $COMPOSER_DIR"
+    log_info "Make sure $COMPOSER_DIR is in your PATH"
   else
     log_info "Composer is already installed"
 
     # Update Composer
     log_info "Updating Composer..."
-    composer self-update
+    composer self-update || log_info "Composer is already up to date"
   fi
 }
 

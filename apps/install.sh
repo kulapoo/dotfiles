@@ -27,13 +27,31 @@ install_vlc() {
 # Google Chrome
 install_chrome() {
     if ! command -v google-chrome &> /dev/null; then
-        log_info "Installing Google Chrome..."
-        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-        sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+        log_info "[install_chrome] Installing Google Chrome..."
+        
+        # Clean up any existing Chrome repository files
+        sudo rm -f /etc/apt/sources.list.d/google-chrome.list
+        sudo rm -f /etc/apt/sources.list.d/google-chrome*.list
+        
+        # Download and add the Google GPG key to the new location
+        log_info "[install_chrome] Adding Google GPG key..."
+        wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /usr/share/keyrings/google-chrome.gpg > /dev/null
+        
+        # Add the repository with the signed-by option (modern approach)
+        log_info "[install_chrome] Adding Chrome repository..."
+        echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | \
+            sudo tee /etc/apt/sources.list.d/google-chrome.list > /dev/null
+        
+        # Update and install
         sudo apt-get update
-        sudo apt-get install -y google-chrome-stable
+        if sudo apt-get install -y google-chrome-stable; then
+            log_success "[install_chrome] Google Chrome installed successfully"
+        else
+            log_error "[install_chrome] Failed to install Google Chrome"
+            return 1
+        fi
     else
-        log_info "Google Chrome is already installed"
+        log_info "[install_chrome] Google Chrome is already installed"
     fi
 }
 
@@ -115,7 +133,7 @@ install_dconf() {
 install_youtube_music() {
     if ! command -v youtube-music &> /dev/null; then
         log_info "Installing Youtube Music..."
-        sudo snap install youtube-music-desktop-app
+        sudo snap install youtube-music-desktop-app --stable
     else
         log_info "Youtube Music is already installed"
     fi
@@ -125,7 +143,7 @@ install_youtube_music() {
 install_sublime() {
   if ! command -v subl &> /dev/null; then
     log_info "Installing Sublime Text..."
-    sudo snap install sublime-text --classic
+    sudo snap install sublime-text --classic --stable
   else
     log_info "Sublime Text is already installed"
   fi
@@ -134,13 +152,42 @@ install_sublime() {
 # VSCode
 install_vscode() {
     if ! command -v code &> /dev/null; then
-        log_info "Installing Visual Studio Code..."
-        wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
-        sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+        log_info "[install_vscode] Installing Visual Studio Code..."
+        
+        # Clean up any existing VSCode repository files first
+        log_info "[install_vscode] Cleaning up old VSCode repository files..."
+        sudo rm -f /etc/apt/sources.list.d/vscode.list
+        sudo rm -f /etc/apt/sources.list.d/vscode.sources
+        sudo rm -f /etc/apt/sources.list.d/archive_uri-https_packages_microsoft_com_repos_vscode*.list
+        
+        # Download and add the Microsoft GPG key to the new location
+        log_info "[install_vscode] Adding Microsoft GPG key..."
+        wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /usr/share/keyrings/microsoft-vscode.gpg > /dev/null
+        
+        # Add the repository with the signed-by option (modern approach)
+        log_info "[install_vscode] Adding VSCode repository..."
+        echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-vscode.gpg] https://packages.microsoft.com/repos/vscode stable main" | \
+            sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
+        
+        # Update and install
         sudo apt-get update
-        sudo apt-get install -y code
+        if sudo apt-get install -y code; then
+            log_success "[install_vscode] Visual Studio Code installed successfully"
+        else
+            log_error "[install_vscode] Failed to install Visual Studio Code"
+            return 1
+        fi
     else
-        log_info "Visual Studio Code is already installed"
+        log_info "[install_vscode] Visual Studio Code is already installed"
+        
+        # Clean up duplicate repository files if they exist
+        if [ -f /etc/apt/sources.list.d/archive_uri-https_packages_microsoft_com_repos_vscode-jammy.list ] || \
+           [ -f /etc/apt/sources.list.d/vscode.sources ]; then
+            log_info "[install_vscode] Cleaning up duplicate VSCode repository files..."
+            sudo rm -f /etc/apt/sources.list.d/archive_uri-https_packages_microsoft_com_repos_vscode*.list
+            sudo rm -f /etc/apt/sources.list.d/vscode.sources
+            log_success "[install_vscode] Duplicate repository files removed"
+        fi
     fi
 }
 
@@ -157,23 +204,11 @@ install_guake() {
 install_sublime_merge() {
   if ! command -v smerge &> /dev/null; then
     log_info "Installing Sublime Merge..."
-    sudo snap install sublime-merge --classic
+    sudo snap install sublime-merge --classic --stable
   else
     log_info "Sublime Merge is already installed"
   fi
 }
-
-
-# VirtualBox
-install_virtualbox() {
-  if ! command -v virtualbox &> /dev/null; then
-    log_info "Installing VirtualBox..."
-    sudo apt-get install -y virtualbox
-  else
-    log_info "VirtualBox is already installed"
-  fi
-}
-
 
 # Menulibre
 install_menulibre() {

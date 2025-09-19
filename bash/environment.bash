@@ -66,9 +66,13 @@ if [ -f "$HOME/.cargo/env" ]; then
     source "$HOME/.cargo/env"
 fi
 
-# PHP configuration
-export PATH="/home/linuxbrew/.linuxbrew/opt/php/bin:$PATH"
-export PATH="/home/linuxbrew/.linuxbrew/opt/php/sbin:$PATH"
+# PHP configuration (only if linuxbrew is installed)
+if [ -d "/home/linuxbrew/.linuxbrew/opt/php/bin" ]; then
+  export PATH="/home/linuxbrew/.linuxbrew/opt/php/bin:$PATH"
+fi
+if [ -d "/home/linuxbrew/.linuxbrew/opt/php/sbin" ]; then
+  export PATH="/home/linuxbrew/.linuxbrew/opt/php/sbin:$PATH"
+fi
 
 # Go Configuration
 export GOPATH="$HOME/go"
@@ -190,4 +194,7 @@ ftext() { grep -r "$1" .; }                 # Find text in files
 
 
 
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+# Initialize Homebrew if installed
+if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" 2>/dev/null || true
+fi
