@@ -124,7 +124,7 @@ function uvenv() {
     log_error "[uvenv] uv is not installed. Please install it first."
     return 1
   fi
-  
+
   if [ -z "$1" ]; then
     if ! uv venv 2>/dev/null; then
       log_error "[uvenv] Failed to create virtual environment"
@@ -136,7 +136,7 @@ function uvenv() {
       return 1
     fi
   fi
-  
+
   if [ -f .venv/bin/activate ]; then
     source .venv/bin/activate || { log_error "[uvenv] Failed to activate virtual environment"; return 1; }
     log_success "[uvenv] Virtual environment created and activated"
@@ -152,7 +152,7 @@ function uvinstall() {
     log_error "[uvinstall] uv is not installed. Please install it first."
     return 1
   fi
-  
+
   if [ -f "requirements.txt" ] && [ $# -eq 0 ]; then
     if uv pip install -r requirements.txt 2>/dev/null; then
       log_success "[uvinstall] Successfully installed packages from requirements.txt"
@@ -176,7 +176,7 @@ function uvsync() {
     log_error "[uvsync] uv is not installed. Please install it first."
     return 1
   fi
-  
+
   if [ -f "pyproject.toml" ]; then
     if uv sync 2>/dev/null; then
       log_success "[uvsync] Successfully synced project dependencies"
@@ -196,7 +196,7 @@ function uvrun() {
     log_error "[uvrun] uv is not installed. Please install it first."
     return 1
   fi
-  
+
   if ! uv run "$@" 2>/dev/null; then
     log_error "[uvrun] Failed to run command: $@"
     return 1
@@ -209,13 +209,13 @@ function uvpy() {
     log_error "[uvpy] uv is not installed. Please install it first."
     return 1
   fi
-  
+
   if [ -z "$1" ]; then
     log_error "[uvpy] Usage: uvpy <python-version>"
     log_info "Example: uvpy 3.11"
     return 1
   fi
-  
+
   if uv python install "$1" 2>/dev/null; then
     log_success "[uvpy] Successfully installed Python $1"
   else
@@ -230,7 +230,7 @@ function uvlist() {
     log_error "[uvlist] uv is not installed. Please install it first."
     return 1
   fi
-  
+
   if ! uv python list 2>/dev/null; then
     log_error "[uvlist] Failed to list Python versions"
     return 1
@@ -533,3 +533,9 @@ function temps() {
 # Alias for quick temperature check
 alias temp='temps -c'
 alias tempw='temps -w'
+
+
+cursor() {
+    nohup $HOME/Applications/Cursor-*.AppImage "$@" > /dev/null 2>&1 &
+    disown
+}
