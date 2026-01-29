@@ -37,7 +37,7 @@ install_apt_tools() {
         "ripgrep"
         "fd-find"
         "tree"
-        "ncdu"
+        "ncdu" # file info tool
         "jq"
         "neofetch"
     )

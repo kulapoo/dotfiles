@@ -28,20 +28,20 @@ install_vlc() {
 install_chrome() {
     if ! command -v google-chrome &> /dev/null; then
         log_info "[install_chrome] Installing Google Chrome..."
-        
+
         # Clean up any existing Chrome repository files
         sudo rm -f /etc/apt/sources.list.d/google-chrome.list
         sudo rm -f /etc/apt/sources.list.d/google-chrome*.list
-        
+
         # Download and add the Google GPG key to the new location
         log_info "[install_chrome] Adding Google GPG key..."
         wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /usr/share/keyrings/google-chrome.gpg > /dev/null
-        
+
         # Add the repository with the signed-by option (modern approach)
         log_info "[install_chrome] Adding Chrome repository..."
         echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | \
             sudo tee /etc/apt/sources.list.d/google-chrome.list > /dev/null
-        
+
         # Update and install
         sudo apt-get update
         if sudo apt-get install -y google-chrome-stable; then
@@ -54,21 +54,6 @@ install_chrome() {
         log_info "[install_chrome] Google Chrome is already installed"
     fi
 }
-
-install_appimagelauncher() {
-  log_section "Installing AppImageLauncher"
-  if ! command_exists appimagelauncher; then
-    log_info "Installing AppImageLauncher from PPA..."
-    sudo apt-get install -y software-properties-common
-    sudo add-apt-repository -y ppa:appimagelauncher-team/stable
-    sudo apt-get update
-    sudo apt-get install -y appimagelauncher
-    log_success "AppImageLauncher installed successfully"
-  else
-    log_info "AppImageLauncher is already installed"
-  fi
-}
-
 
 # Flameshot
 install_flameshot() {
@@ -153,22 +138,22 @@ install_sublime() {
 install_vscode() {
     if ! command -v code &> /dev/null; then
         log_info "[install_vscode] Installing Visual Studio Code..."
-        
+
         # Clean up any existing VSCode repository files first
         log_info "[install_vscode] Cleaning up old VSCode repository files..."
         sudo rm -f /etc/apt/sources.list.d/vscode.list
         sudo rm -f /etc/apt/sources.list.d/vscode.sources
         sudo rm -f /etc/apt/sources.list.d/archive_uri-https_packages_microsoft_com_repos_vscode*.list
-        
+
         # Download and add the Microsoft GPG key to the new location
         log_info "[install_vscode] Adding Microsoft GPG key..."
         wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /usr/share/keyrings/microsoft-vscode.gpg > /dev/null
-        
+
         # Add the repository with the signed-by option (modern approach)
         log_info "[install_vscode] Adding VSCode repository..."
         echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-vscode.gpg] https://packages.microsoft.com/repos/vscode stable main" | \
             sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
-        
+
         # Update and install
         sudo apt-get update
         if sudo apt-get install -y code; then
@@ -179,7 +164,7 @@ install_vscode() {
         fi
     else
         log_info "[install_vscode] Visual Studio Code is already installed"
-        
+
         # Clean up duplicate repository files if they exist
         if [ -f /etc/apt/sources.list.d/archive_uri-https_packages_microsoft_com_repos_vscode-jammy.list ] || \
            [ -f /etc/apt/sources.list.d/vscode.sources ]; then
@@ -210,16 +195,6 @@ install_sublime_merge() {
   fi
 }
 
-# Menulibre
-install_menulibre() {
-  if ! command -v menulibre &> /dev/null; then
-    log_info "Installing Menulibre..."
-    sudo apt-get install -y menulibre
-  else
-    log_info "Menulibre is already installed"
-  fi
-}
-
 # Main installation function
 main() {
     log_info "Starting applications installation..."
@@ -242,8 +217,6 @@ main() {
     install_stacer
     install_sublime
     install_sublime_merge
-    install_appimagelauncher
-    install_menulibre
 
     log_info "Applications installation complete!"
 }

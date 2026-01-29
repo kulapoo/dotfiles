@@ -77,7 +77,8 @@ extract () {
     fi
 }
 
-# This function duplicates the current Guake tab and changes to the current directory
+# only for guake but needs to be dynamic on which default terminal is used
+# This function duplicates the current terminal tab and changes to the current directory
 function dup() {
   # Check if guake is installed
   if ! command -v guake &> /dev/null; then
