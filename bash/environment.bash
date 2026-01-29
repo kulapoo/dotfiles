@@ -198,3 +198,6 @@ ftext() { grep -r "$1" .; }                 # Find text in files
 if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" 2>/dev/null || true
 fi
+
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
