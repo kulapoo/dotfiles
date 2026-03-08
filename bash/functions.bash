@@ -535,6 +535,182 @@ function temps() {
 alias temp='temps -c'
 alias tempw='temps -w'
 
+# ==================== YOUTUBE TRANSCRIPT FUNCTION ====================
+# Copy YouTube transcript to clipboard (works with any YouTube link)
+#
+# REQUIREMENTS (install once on new machine):
+#   # 1. Install uv (Python package manager)
+#   curl -LsSf https://astral.sh/uv/install.sh | sh
+#
+#   # 2. Install clipboard tool (choose one based on your system)
+#   # For Wayland:
+#   sudo apt install wl-clipboard  # Debian/Ubuntu
+#   # OR for X11:
+#   sudo apt install xclip         # Debian/Ubuntu
+#
+#   # 3. Install required Python package
+#   uv pip install yt-dlp-transcripts
+#
+# USAGE:
+#   yt-transcript                    # Uses URL from clipboard
+#   yt-transcript "youtube_url"      # Uses provided URL
+#   yt-transcript --help              # Show help
+# =====================================================================
+
+yt-transcript() {
+    # Show help if requested
+    if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
+        echo "📹 YouTube Transcript Copier"
+        echo ""
+        echo "USAGE:"
+        echo "  yt-transcript                    # Uses URL from clipboard"
+        echo "  yt-transcript \"youtube_url\"      # Uses provided URL"
+        echo ""
+        echo "REQUIREMENTS (install once):"
+        echo "  # Install uv (if not already installed)"
+        echo "  curl -LsSf https://astral.sh/uv/install.sh | sh"
+        echo ""
+        echo "  # Install clipboard tool"
+        echo "  sudo apt install wl-clipboard  # for Wayland"
+        echo "  # OR"
+        echo "  sudo apt install xclip         # for X11"
+        echo ""
+        echo "  # Install yt-dlp-transcripts as a global tool"
+        echo "  uv tool install yt-dlp-transcripts"
+        echo ""
+        echo "EXAMPLE:"
+        echo "  yt-transcript \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\""
+        echo "  # Or just copy a URL and run: yt-transcript"
+        return 0
+    fi
+
+    # Check if required package is installed (using uv tool)
+    if ! command -v yt-dlp-transcripts &> /dev/null; then
+        echo "❌ yt-dlp-transcripts not found!"
+        echo "   Run: uv tool install yt-dlp-transcripts"
+        return 1
+    fi
+
+    # Function to extract clean video URL (strips ALL other parameters)
+    clean_youtube_url() {
+        local url="$1"
+
+        # Extract video ID using regex (works with various YouTube URL formats)
+        if [[ $url =~ (v=|/)([0-9A-Za-z_-]{11}) ]]; then
+            video_id="${BASH_REMATCH[2]}"
+            # Return clean URL with ONLY the video ID
+            echo "https://www.youtube.com/watch?v=$video_id"
+        else
+            # If no video ID found, return original URL (might be playlist or channel)
+            echo "$url"
+        fi
+    }
+
+    # Get URL from clipboard if no argument provided
+    local INPUT_URL
+    if [ -z "$1" ]; then
+        # Try Wayland clipboard first
+        if command -v wl-paste &> /dev/null; then
+            INPUT_URL=$(wl-paste 2>/dev/null)
+        # Fallback to xclip
+        elif command -v xclip &> /dev/null; then
+            INPUT_URL=$(xclip -selection clipboard -o 2>/dev/null)
+        else
+            echo "❌ No clipboard tool found!"
+            echo "   Install wl-clipboard (Wayland) or xclip (X11)"
+            echo "   sudo apt install wl-clipboard  # for Wayland"
+            echo "   sudo apt install xclip         # for X11"
+            return 1
+        fi
+
+        # Check if we got anything from clipboard
+        if [ -z "$INPUT_URL" ]; then
+            echo "❌ Clipboard is empty"
+            echo "   Copy a YouTube link first or provide URL as argument"
+            return 1
+        fi
+
+        # Check if clipboard contains a YouTube URL
+        if [[ ! $INPUT_URL =~ (youtube\.com|youtu\.be) ]]; then
+            echo "❌ Clipboard doesn't contain a YouTube URL"
+            echo "   Current clipboard: $INPUT_URL"
+            echo "   Copy a YouTube link first or provide URL as argument"
+            return 1
+        fi
+    else
+        INPUT_URL="$1"
+    fi
+
+    # Clean the URL (removes ALL extra parameters)
+    local CLEAN_URL
+    CLEAN_URL=$(clean_youtube_url "$INPUT_URL")
+
+    # Show what we're using (helpful for debugging)
+    if [ "$INPUT_URL" != "$CLEAN_URL" ]; then
+        echo "📋 Input: $INPUT_URL"
+        echo "🔗 Clean URL: $CLEAN_URL"
+    fi
+
+    # Create temporary file
+    local temp_file
+    temp_file=$(mktemp)
+
+    # Download transcript and copy to clipboard
+    echo "⏳ Fetching transcript..."
+
+    # Run the tool and capture output
+    if yt-dlp-transcripts -u "$CLEAN_URL" -o "$temp_file" 2>/dev/null; then
+        # Check if file has content and contains transcript
+        if [ -s "$temp_file" ] && grep -q "transcript" "$temp_file"; then
+            # Extract transcript column (assuming it's the 5th column) and copy to clipboard
+            if command -v wl-copy &> /dev/null; then
+                cut -d, -f5 "$temp_file" | sed 's/^"//;s/"$//' | wl-copy
+                echo "✅ Transcript copied to clipboard (Wayland)!"
+            elif command -v xclip &> /dev/null; then
+                cut -d, -f5 "$temp_file" | sed 's/^"//;s/"$//' | xclip -selection clipboard
+                echo "✅ Transcript copied to clipboard (X11)!"
+            else
+                echo "✅ Transcript saved but no clipboard tool found"
+                echo "   File location: $temp_file"
+                cat "$temp_file"
+                return 0
+            fi
+
+            # Show preview (first 3 lines, cleaned up)
+            echo "📝 Preview:"
+            cut -d, -f5 "$temp_file" | sed 's/^"//;s/"$//' | head -n 3 | while read -r line; do
+                # Truncate long lines for display
+                if [ ${#line} -gt 80 ]; then
+                    echo "  ${line:0:77}..."
+                else
+                    echo "  $line"
+                fi
+            done
+
+            # Show transcript stats
+            local line_count word_count
+            line_count=$(cut -d, -f5 "$temp_file" | wc -l)
+            word_count=$(cut -d, -f5 "$temp_file" | wc -w)
+            echo "📊 Stats: $line_count lines, ~$word_count words"
+
+            # Clean up temp file
+            rm -f "$temp_file"
+        else
+            echo "❌ No transcript found for this video"
+            echo "   The video might not have captions available"
+            rm -f "$temp_file"
+            return 1
+        fi
+    else
+        echo "❌ Failed to get transcript"
+        echo "   Possible reasons:"
+        echo "   - Video doesn't exist"
+        echo "   - No captions available"
+        echo "   - Network issue"
+        rm  -f  "$temp_file" 2>/dev/null
+        return 1
+    fi
+}
 
 cursor() {
     nohup $HOME/Applications/Cursor-*.AppImage "$@" > /dev/null 2>&1 &
