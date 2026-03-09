@@ -711,8 +711,3 @@ yt-transcript() {
         return 1
     fi
 }
-
-cursor() {
-    nohup $HOME/Applications/Cursor-*.AppImage "$@" > /dev/null 2>&1 &
-    disown
-}
